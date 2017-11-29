@@ -20,6 +20,7 @@ interface Props {
     radius: number;
     fill: string;
     replica: Replica;
+    onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
 }
 
 class Operation extends React.Component<Props, States> {
@@ -34,7 +35,7 @@ class Operation extends React.Component<Props, States> {
 
     render() {
         return (
-            <Group draggable={true}>
+            <Group draggable={true} onClick={(e) => this.onClickHandel(e, this.state.operation, this)}>
                 <Group onMouseEnter={this.onMouseEnter}
                        onMouseLeave={this.onMouseLeave}>
                     <Circle x={this.props.x} y={this.props.y}
@@ -68,6 +69,11 @@ class Operation extends React.Component<Props, States> {
 
     remove() {
         this.state.replica.removeOp(this)
+    }
+
+    onClickHandel = (e: any, op: string, operation: Operation) => {
+        this.props.onOperationClick(e, op, operation);
+
     }
 }
 

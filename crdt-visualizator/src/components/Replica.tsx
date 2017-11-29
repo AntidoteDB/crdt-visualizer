@@ -18,6 +18,7 @@ interface States {
 interface Props {
     points: number[];
     name: string;
+    onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
 }
 
 class Replica extends React.Component<Props, States> {
@@ -61,7 +62,7 @@ class Replica extends React.Component<Props, States> {
                         replica={this} x={operation.state.posX} y={operation.state.posY}
                         radius={operation.state.radius}
                         fill={operation.state.fill}
-                        key={index}
+                        key={index} onOperationClick={this.props.onOperationClick}
                     />)}
                 <TooltipForState
                     x={this.state.MouseX}
@@ -101,7 +102,8 @@ class Replica extends React.Component<Props, States> {
             x: e.evt.clientX,
             y: e.evt.clientY,
             radius: 20,
-            fill: '#207192'
+            fill: '#207192',
+            onOperationClick: this.props.onOperationClick
         }
         let op1 = new Operation(op);
         let act = this.state.operations;

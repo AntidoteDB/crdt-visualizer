@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Layer, Group, Rect} from 'react-konva';
 import Update from './Update';
 import Replica from "./Replica";
+import Operation from "./Operation";
 
 interface State {
     fromX: number;
@@ -34,7 +35,7 @@ interface State {
 
 interface Props {
 
-
+    onOperationClick: (e: any, operation_name: string, operation: Operation) => void
 }
 
 class UpdateLayer extends React.Component <Props, State> {
@@ -67,10 +68,6 @@ class UpdateLayer extends React.Component <Props, State> {
             Replica_3_height: 10
         }
 
-    }
-
-    componentdidMount() {
-        console.log('okokok')
     }
 
     render() {
@@ -153,22 +150,38 @@ class UpdateLayer extends React.Component <Props, State> {
         if (pointX >= this.state.Replica_1_x && pointY >= this.state.Replica_1_y
             && pointX <= (this.state.Replica_1_x + this.state.Replica_1_width)
             && pointY <= (this.state.Replica_1_y + this.state.Replica_1_height)) {
-            return new Replica({points: [100, 100, 700, 100], name: 'R1'})
+            return new Replica({
+                points: [100, 100, 700, 100],
+                name: 'R1',
+                onOperationClick: this.props.onOperationClick
+            })
         }
         else if (pointX >= this.state.Replica_2o_x && pointY >= this.state.Replica_2o_y
             && pointX <= (this.state.Replica_2o_x + this.state.Replica_2o_width)
             && pointY <= (this.state.Replica_2o_y + this.state.Replica_2o_height)) {
-            return new Replica({points: [100, 200, 700, 200], name: 'R2'})
+            return new Replica({
+                points: [100, 200, 700, 200],
+                name: 'R2',
+                onOperationClick: this.props.onOperationClick
+            })
         }
         else if (pointX >= this.state.Replica_2u_x && pointY >= this.state.Replica_2u_y
             && pointX <= (this.state.Replica_2u_x + this.state.Replica_2u_width)
             && pointY <= (this.state.Replica_2u_y + this.state.Replica_2u_height)) {
-            return new Replica({points: [100, 200, 700, 200], name: 'R2'})
+            return new Replica({
+                points: [100, 200, 700, 200],
+                name: 'R2',
+                onOperationClick: this.props.onOperationClick
+            })
         }
         else if (pointX >= this.state.Replica_3_x && pointY >= this.state.Replica_3_y
             && pointX <= (this.state.Replica_3_x + this.state.Replica_3_width)
             && pointY <= (this.state.Replica_3_y + this.state.Replica_3_height)) {
-            return new Replica({points: [100, 300, 700, 300], name: 'R3'})
+            return new Replica({
+                points: [100, 300, 700, 300],
+                name: 'R3',
+                onOperationClick: this.props.onOperationClick
+            })
         }
 
         else return null
