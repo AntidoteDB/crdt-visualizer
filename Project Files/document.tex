@@ -1,0 +1,75 @@
+\documentclass{scrreprt}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\hypersetup{
+	bookmarks=false,    % show bookmarks bar?
+	pdftitle={Software Requirement Specification},    % title
+	pdfauthor={Yiannis Lazarides},                     % author
+	pdfsubject={TeX and LaTeX},                        % subject of the document
+	pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+	colorlinks=true,       % false: boxed links; true: colored links
+	linkcolor=blue,       % color of internal links
+	citecolor=black,       % color of links to bibliography
+	filecolor=black,        % color of file links
+	urlcolor=purple,        % color of external links
+	linktoc=page            % only page is linked
+}%
+\def\myversion{1.0 }
+\title{%
+	\flushleft
+	\rule{16cm}{5pt}\vskip1cm
+	\Huge{SOFTWARE REQUIREMENTS\\ SPECIFICATION}\\
+	\vspace{2cm}
+	for\\
+	\vspace{2cm}
+	An interactive tool for demonstrating CRDTs\\
+	\vspace{2cm}
+	\LARGE{Release 1.0\\}
+	\vspace{2cm}
+	Prepared by:\\
+	Yassin Frekha \\
+   	Rasha Abu Qasem\\
+	\vfill
+	\rule{16cm}{5pt}
+}
+\date{}
+\usepackage{hyperref}
+\begin{document}
+	\maketitle
+	\tableofcontents
+	\chapter{Introduction}
+	
+	\chapter{Requirements List}
+	\section{Functional Requirements}
+	\begin{itemize}
+	\item The number of replicas should be a variable specified in the markdown document.
+	\item The visualizer could be embedded anywhere in the document.
+	\item Several instances of the visualizer can run simultaneously in the same document. 
+	\item An initial example for each data type should be specified in the markdown document.
+	\item The user can add an operation of the data type by clicking on a point on the replica.
+	\item After clicking on a point a text-field would be displayed for the user.
+	\item The user can add the desired operation by writing in a text-field.
+	\item The text-field should have auto-complete feature.
+	\item Only appropriate operations for a data-type are allowed.  
+	\item The user can remove an operation by dragging the operation point and dropping it in the trash(needs investigation). 
+	\item The user can update the states between replicas by drawing an arrow from the source replica to the designated replica.
+	\item The state of the replica should be updated according to the execution plan.
+	
+	\end{itemize}
+	\section{Non-Functional Requirements}
+	\begin{itemize}
+	\item The project will be implemented with Typescript.
+	\item The design should be extendable.
+	\item Priorities of implementation:
+	\begin{enumerate}
+	\item Number Type
+	\item Sets
+	\item Flags
+	\item LWW-Register
+	\item MV-Register
+	\item Maps
+	\end{enumerate}
+	\end{itemize}
+	
+\end{document}
