@@ -90,13 +90,15 @@ class UpdateLayer extends React.Component <Props, State> {
                           x={this.state.Replica_3_x} y={this.state.Replica_3_y}
                           fill={'LightGray'} cornerRadius={20} opacity={0.5}/>
 
+                    {this.state.isDrawing ?
                     <Update updateLayer={this}
                             fromX={this.state.fromX}
                             fromY={this.state.fromY}
                             toX={this.state.toX}
                             toY={this.state.toY}
 
-                    />
+                    /> : null
+                    }
 
                 </Group>
                 {this.state.updates.map((update, index) =>
@@ -190,7 +192,7 @@ class UpdateLayer extends React.Component <Props, State> {
     }
 
     remove(update: Update) {
-        let Upd_state = this.state.updates;
+        let Upd_state = this.state.updates.slice();
         let i = 0;
         for (i; i < Upd_state.length; i++) {
             if (Upd_state[i].props.fromX == update.props.fromX
