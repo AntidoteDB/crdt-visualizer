@@ -91,13 +91,13 @@ class UpdateLayer extends React.Component <Props, State> {
                           fill={'LightGray'} cornerRadius={20} opacity={0.5}/>
 
                     {this.state.isDrawing ?
-                    <Update updateLayer={this}
-                            fromX={this.state.fromX}
-                            fromY={this.state.fromY}
-                            toX={this.state.toX}
-                            toY={this.state.toY}
+                        <Update updateLayer={this}
+                                fromX={this.state.fromX}
+                                fromY={this.state.fromY}
+                                toX={this.state.toX}
+                                toY={this.state.toY}
 
-                    /> : null
+                        /> : null
                     }
 
                 </Group>
