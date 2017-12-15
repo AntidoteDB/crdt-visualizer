@@ -3,6 +3,7 @@ import {Circle, Group, Text} from 'react-konva';
 import Tooltip from "./Tooltip";
 import Remove from "./Remove";
 import Replica from "./Replica";
+import visualizer from "../classes/visualizer";
 
 
 interface States {
@@ -25,6 +26,7 @@ interface Props {
     fill: string;
     replica: Replica;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
+    visualizer?: visualizer;
 }
 
 class Operation extends React.Component<Props, States> {
@@ -45,7 +47,8 @@ class Operation extends React.Component<Props, States> {
             <Group draggable={true} onClick={(e) => this.onClickHandel(e, this.state.operation, this)}
                    dragBoundFunc={() => this.dragBound({x: 0, y: 0})}
                    onDragMove={(e) => this.dragMove(e)}
-                   onDragStart={(e) => this.onDragStart(e)}
+                   onDragStart={(e) => this.onDragStart()}
+                   onDragEnd={() => this.onDragEnd()}
             >
                 <Group onMouseEnter={this.onMouseEnter}
                        onMouseLeave={this.onMouseLeave}>
@@ -80,12 +83,13 @@ class Operation extends React.Component<Props, States> {
     }
 
     remove() {
-        this.state.replica.removeOp(this)
+        this.state.replica.removeOp(this);
+        this.props.visualizer!.remove_operation(this.props.replica.getReplicaId(), this.state.x);
+        this.props.visualizer!.execute_updates();
     }
 
     onClickHandel = (e: any, op: string, operation: Operation) => {
         this.props.onOperationClick(e, op, operation);
-
     }
     dragBound = (pos: any) => {
         let x = pos.x;
@@ -93,8 +97,8 @@ class Operation extends React.Component<Props, States> {
         return {x, y};
 
     }
-    onDragStart = (e: any) => {
-        this.setState({isDragging: true, currentX: e.evt.clientX})
+    onDragStart = () => {
+        this.setState({isDragging: true, currentX: this.state.x})
     }
     dragMove = (e: any) => {
         if (this.state.isDragging) {
@@ -105,7 +109,10 @@ class Operation extends React.Component<Props, States> {
                 this.setState({x: e.evt.clientX});
             }
         }
-        console.log(this.state.x)
+    }
+    onDragEnd = () => {
+        this.props.visualizer!.move_operation(this.state.replica.getReplicaId(), this.state.currentX, this.state.x);
+        this.props.visualizer!.execute_updates();
     }
 }
 

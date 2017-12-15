@@ -35,7 +35,7 @@ interface State {
 
 interface Props {
 
-    onOperationClick: (e: any, operation_name: string, operation: Operation) => void
+    onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
 }
 
 class UpdateLayer extends React.Component <Props, State> {
@@ -155,7 +155,7 @@ class UpdateLayer extends React.Component <Props, State> {
             return new Replica({
                 points: [100, 100, 700, 100],
                 name: 'R1',
-                onOperationClick: this.props.onOperationClick
+                onOperationClick: this.props.onOperationClick,
             })
         }
         else if (pointX >= this.state.Replica_2o_x && pointY >= this.state.Replica_2o_y

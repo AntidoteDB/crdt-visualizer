@@ -2,6 +2,8 @@ import * as React from 'react';
 import {Arrow, Group, Rect, Text} from 'react-konva';
 import Operation from "./Operation";
 import TooltipForState from "./ToolTipForState";
+import visualizer from "../classes/visualizer";
+
 
 interface States {
     posX: number;
@@ -19,6 +21,7 @@ interface Props {
     points: number[];
     name: string;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
+    visualizer?: visualizer;
 }
 
 class Replica extends React.Component<Props, States> {
@@ -63,12 +66,13 @@ class Replica extends React.Component<Props, States> {
                         radius={operation.state.radius}
                         fill={operation.state.fill}
                         key={index} onOperationClick={this.props.onOperationClick}
+                        visualizer={this.props.visualizer}
                     />)}
                 <TooltipForState
                     x={this.state.MouseX}
                     y={this.state.MouseY}
                     text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
-                    state={'State:'}
+                    state={'State:' + this.props.visualizer!.execute_update_query(this.getReplicaId(), this.state.MouseX)}
                     visible={this.state.isMouseOver ? true : false}
                 />
 
@@ -108,7 +112,9 @@ class Replica extends React.Component<Props, States> {
         let op1 = new Operation(op);
         let act = this.state.operations;
         let newState = act.concat(op1);
-        this.setState({operations: newState})
+        this.setState({operations: newState});
+
+
     }
 
     removeOp(o: Operation) {
@@ -122,12 +128,32 @@ class Replica extends React.Component<Props, States> {
     }
 
     onMouseEnter = (e: any) => {
-        this.setState({isMouseOver: true, MouseX: e.evt.clientX, MouseY: e.evt.clientY})
+        this.setState({isMouseOver: true, MouseX: e.evt.clientX, MouseY: e.evt.clientY});
     }
     onMouseLeave = () => {
         this.setState({isMouseOver: false})
     }
 
+    getReplicaId() {
+        var x = this.props.name
+        var y = 0;
+        switch (x) {
+            case "R1": {
+                y = 0;
+                break;
+            }
+            case "R2": {
+                y = 1;
+                break;
+            }
+            case "R3": {
+                y = 2;
+                break;
+            }
+        }
+        ;
+        return y;
+    }
 }
 
 export default Replica;
