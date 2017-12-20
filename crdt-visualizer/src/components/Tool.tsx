@@ -10,6 +10,8 @@ import {operation} from "../classes/operation";
 interface States {
 
     textEditVisible: boolean,
+    ErrorVisible: boolean,
+    errorMessage?: string,
     textX: number,
     textY: number,
     textValue: string,
@@ -27,6 +29,7 @@ class Tool extends React.Component <Props, States> {
         super(props)
         this.state = {
             textEditVisible: false,
+            ErrorVisible: false,
             textX: 0,
             textY: 0,
             textValue: '',
@@ -55,6 +58,22 @@ class Tool extends React.Component <Props, States> {
                     onChange={this.handleTextEdit}
                     onKeyDown={this.handleTextareaKeyDown}
                 />
+                <div>
+                    <div style={{
+                        display: this.state.ErrorVisible ? 'block' : 'none',
+                        position: 'absolute',
+                        top: this.state.textY + 20 + 'px',
+                        left: this.state.textX + 20 + 'px',
+                        background: '#f44336',
+                        color: 'white',
+                        padding: 20 + 'px',
+                        cursor: 'wait',
+                        opacity: 0.7,
+                        borderRadius: 25 + 'px',
+                    }}><b>Danger!</b> {this.state.errorMessage} is not a valid Operation.
+                    </div>
+                </div>
+
             </div>
         );
     }
@@ -101,9 +120,22 @@ class Tool extends React.Component <Props, States> {
             let opName = this.state.op.state.operation;
             if (this.state.visualizer.variable_list[y].getOp(this.state.op.state.x) === null ||
                 ( this.state.visualizer.variable_list[y].getOp(this.state.op.state.x)!.time_stamp === this.state.op.state.x
-                    && this.state.visualizer.variable_list[y].getOp(this.state.op.state.x)!.operation != opName)) {
+                    && this.state.visualizer.variable_list[y].getOp(this.state.op.state.x)!.operation != opName)
+            ) {
+                let newOp = new operation(opName, this.state.op.state.x);
+                if (newOp.is_valid_operation(newOp.operation)) {
+                    this.state.op.setState({fill: '#3CB371'});
+                    this.setState({errorMessage: ""});
+                } else {
+                    setTimeout(() => {
+                        this.setState({ErrorVisible: false});
+                    }, 3000);
+                    this.state.op!.setState({fill: '#207192', operation: "operation"});
+                    this.setState({ErrorVisible: true});
+                    this.setState({errorMessage: newOp.operation});
+                }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
-                this.state.visualizer.add_operation(y, new operation(opName, this.state.op.state.x))
+                this.state.visualizer.add_operation(y, newOp)
                 this.state.visualizer.execute_updates();
             }
         }

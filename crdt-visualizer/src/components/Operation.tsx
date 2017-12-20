@@ -54,7 +54,7 @@ class Operation extends React.Component<Props, States> {
                        onMouseLeave={this.onMouseLeave}>
                     <Circle x={this.state.x} y={this.props.y}
                             radius={this.props.radius}
-                            fill={this.props.fill}
+                            fill={this.state.fill}
                             strokeWidth={this.state.isMouseOver ? 5 : 1}
                             stroke={'black'}
                             shadowBlur={5}

@@ -49,7 +49,6 @@ export default class visualizer {
 
 //-------------------------------------------
     move_operation(replica_id: number, op_Current_time: number, op_New_time: number) {
-        console.log('ok');
         if (this.variable_list[replica_id].getOp(op_Current_time) != null) {
             let opName = this.variable_list[replica_id].getOp(op_Current_time)!.operation;
             this.remove_operation(replica_id, op_Current_time);
