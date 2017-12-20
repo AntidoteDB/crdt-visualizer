@@ -17,7 +17,7 @@ export class counter {
         this.id = id;
     }
 
-    perform_operations_on_replica(c: counter, lower_time: number, upper_time: number) {
+    downstream(c: counter, lower_time: number, upper_time: number) {
         this.operation_sort();
         for (var i = 0; i < this.operation_list.length; i++) {
 
@@ -29,7 +29,7 @@ export class counter {
     }
 
 
-    perform_self_operations(lower_time: number, upper_time: number) {
+    at_source(lower_time: number, upper_time: number) {
 
         this.operation_sort();
         for (var i = 0; i < this.operation_list.length; i++) {

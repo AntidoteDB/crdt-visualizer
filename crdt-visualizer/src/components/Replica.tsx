@@ -72,7 +72,7 @@ class Replica extends React.Component<Props, States> {
                     x={this.state.MouseX}
                     y={this.state.MouseY}
                     text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
-                    state={'State:' + this.props.visualizer!.execute_update_query(this.getReplicaId(), this.state.MouseX)}
+                    state={'State:' + this.props.visualizer!.value(this.getReplicaId(), this.state.MouseX)}
                     visible={this.state.isMouseOver ? true : false}
                 />
 
