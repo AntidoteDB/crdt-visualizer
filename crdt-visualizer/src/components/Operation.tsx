@@ -9,14 +9,14 @@ import visualizer from "../classes/visualizer";
 interface States {
     isMouseOver: boolean;
     operation: string;
-    posX: number;
-    posY: number;
     radius: number;
     fill: string;
     replica: Replica;
     x: number;
+    y: number;
     isDragging: boolean;
     currentX: number;
+    currentY: number;
 }
 
 interface Props {
@@ -34,11 +34,13 @@ class Operation extends React.Component<Props, States> {
         super(props);
         this.state = {
             isMouseOver: false, operation: 'Operation',
-            posX: this.props.x, posY: this.props.y, replica: this.props.replica,
+            replica: this.props.replica,
             radius: this.props.radius, fill: this.props.fill,
             x: this.props.x,
+            y: this.props.y,
             isDragging: false,
-            currentX: 0
+            currentX: 0,
+            currentY: 0
         }
     }
 
@@ -98,12 +100,12 @@ class Operation extends React.Component<Props, States> {
 
     }
     onDragStart = () => {
-        this.setState({isDragging: true, currentX: this.state.x})
+        this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y})
     }
     dragMove = (e: any) => {
         if (this.state.isDragging) {
             if (this.state.x > 700 || this.state.x < 100) {
-                this.setState({x: this.state.currentX, isDragging: false});
+                this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false});
             }
             else {
                 this.setState({x: e.evt.clientX});

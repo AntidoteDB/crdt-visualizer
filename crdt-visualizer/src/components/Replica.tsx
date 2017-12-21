@@ -41,62 +41,43 @@ class Replica extends React.Component<Props, States> {
     }
 
     render() {
-        if (this.state.operations.length > 0) {
-            return <Group>
-                <Arrow
-                    fill={'black'} stroke={'black'} strokeWidth={4}
-                    pointerLength={10} pointerWidth={10}
-                    points={this.props.points} onClick={this.addOp}
-                    onMouseOver={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}
-                />
-                <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
-                      height={30} width={30} fill={'Tomato'} stroke={'black'}
-                />
-                <Text text={this.props.name} fill={'black'}
-                      x={this.props.points[0] - 30} y={this.props.points[1] - 15}
-                      fontSize={15} fontFamily={'Calibri'}
-                      padding={5} align={'center'} height={30} width={30}
-                />
+
+        return <Group>
+            <Arrow
+                fill={'black'} stroke={'black'} strokeWidth={4}
+                pointerLength={10} pointerWidth={10}
+                points={this.props.points} onClick={this.addOp}
+                onMouseOver={this.onMouseEnter}
+                onMouseLeave={this.onMouseLeave}
+            />
+            <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
+                  height={30} width={30} fill={'Tomato'} stroke={'black'}
+            />
+            <Text text={this.props.name} fill={'black'}
+                  x={this.props.points[0] - 30} y={this.props.points[1] - 15}
+                  fontSize={15} fontFamily={'Calibri'}
+                  padding={5} align={'center'} height={30} width={30}
+            />
 
 
-                {this.state.operations.map((operation, index) =>
-                    <Operation
-                        replica={this} x={operation.state.posX} y={operation.state.posY}
-                        radius={operation.state.radius}
-                        fill={operation.state.fill}
-                        key={index} onOperationClick={this.props.onOperationClick}
-                        visualizer={this.props.visualizer}
-                    />)}
-                <TooltipForState
-                    x={this.state.MouseX}
-                    y={this.state.MouseY}
-                    text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
-                    state={'State:' + this.props.visualizer!.value(this.getReplicaId(), this.state.MouseX)}
-                    visible={this.state.isMouseOver ? true : false}
-                />
+            {this.state.operations.map((operation, index) =>
+                <Operation
+                    replica={this} x={operation.state.x} y={operation.state.y}
+                    radius={operation.state.radius}
+                    fill={operation.state.fill}
+                    key={index} onOperationClick={this.props.onOperationClick}
+                    visualizer={this.props.visualizer}
+                />)}
+            <TooltipForState
+                x={this.state.MouseX}
+                y={this.state.MouseY}
+                text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
+                state={'State:' + this.props.visualizer!.value(this.getReplicaId(), this.state.MouseX)}
+                visible={this.state.isMouseOver ? true : false}
+            />
 
-            </Group>
-        }
-        else {
-            return <Group>
-                <Arrow
-                    fill={'black'} stroke={'black'} strokeWidth={4}
-                    pointerLength={10} pointerWidth={10}
-                    points={this.props.points} onClick={this.addOp}
-                    onMouseOver={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}
-                />
-                <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
-                      height={30} width={30} fill={'Tomato'} stroke={'black'}
-                />
-                <Text text={this.props.name} fill={'black'}
-                      x={this.props.points[0] - 30} y={this.props.points[1] - 15}
-                      fontSize={15} fontFamily={'Calibri'}
-                      padding={5} align={'center'} height={30} width={30}
-                /></Group>
+        </Group>
 
-        }
 
     }
 
@@ -119,12 +100,14 @@ class Replica extends React.Component<Props, States> {
 
     removeOp(o: Operation) {
         let Ops_state = this.state.operations;
+        console.log(Ops_state.slice());
         let i = 0;
-        for (i; i < Ops_state.length; i++) {
-            if (Ops_state[i].props.x == o.props.x && Ops_state[i].props.y == o.props.y)
+        for (i; i < Ops_state.slice().length; i++) {
+            if (Ops_state.slice()[i].state.x == o.state.x && Ops_state.slice()[i].state.y == o.state.y)
                 Ops_state.splice(i, 1);
         }
-        this.setState({operations: Ops_state});
+        this.setState({operations: Ops_state.slice()});
+        console.log(this.state.operations)
     }
 
     onMouseEnter = (e: any) => {
