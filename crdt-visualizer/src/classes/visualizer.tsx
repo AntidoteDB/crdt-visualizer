@@ -64,34 +64,34 @@ export default class visualizer {
     }
 
 //-------------------------------------------
-add_update(from_replica:number, from_time: number, to_replica:number, to_time: number){
-    // add the new update to the list
-    var u : update;
-    u = new update(this.update_list.length+1,from_replica,from_time, to_replica,to_time);
-    this.update_list.push(u);
-}
+    add_update(from_replica: number, from_time: number, to_replica: number, to_time: number) {
+        // add the new update to the list
+        var u: update;
+        u = new update(this.update_list.length + 1, from_replica, from_time, to_replica, to_time);
+        this.update_list.push(u);
+    }
 
 //----------------------------------------------------
-remove_update_by_id(u_id: number){
-    var index: number = 0;
-    for (var i=0; i < this.update_list.length; i++) {
-        if (u_id == this.update_list[i].update_id){
-            index = i;
+    remove_update_by_id(u_id: number) {
+        var index: number = 0;
+        for (var i = 0; i < this.update_list.length; i++) {
+            if (u_id == this.update_list[i].update_id) {
+                index = i;
+            }
         }
+        this.update_list.splice(index, 1);
     }
-    this.update_list.splice(index,1); 
-}
 
 //---------------------------------------------------
-remove_update(from_replica:number, from_time: number, to_replica:number, to_time: number){
-    var index: number = -1;
-    for (var i=0; i < this.update_list.length; i++) {
-        if( (this.update_list[i].from_replica== from_replica)&& (this.update_list[i].to_replica== to_replica) &&(this.update_list[i].to_time_stamp== to_time)&&(this.update_list[i].from_time_stamp == from_time) ){
-            index = i;
+    remove_update(from_replica: number, from_time: number, to_replica: number, to_time: number) {
+        var index: number = -1;
+        for (var i = 0; i < this.update_list.length; i++) {
+            if ((this.update_list[i].from_replica == from_replica) && (this.update_list[i].to_replica == to_replica) && (this.update_list[i].to_time_stamp == to_time) && (this.update_list[i].from_time_stamp == from_time)) {
+                index = i;
+            }
         }
+        this.update_list.splice(index, 1);
     }
-    this.update_list.splice(index,1); 
-}
 
 //---------------------------------------------------
     execute_updates() {
@@ -195,59 +195,67 @@ remove_update(from_replica:number, from_time: number, to_replica:number, to_time
 
 //---------------Query--------------------
 //----------------------------------------
-value(replica_id : number,time_stamp: number):number{
-    var temp_update_list : update []= [];
+    value(replica_id: number, time_stamp: number): number {
+        var temp_update_list: update [] = [];
 
-    // initializing variables inner values
-    for (var i=0; i < this.variable_list.length; i++) {
-        this.variable_list[i].inner_value = 0; 
-    }
-
-    //initializing execution matrix
-    this.execution_matrix= [];
-    for (var i=0; i < this.replica_list.length; i++) {
-        this.execution_matrix[i]=[];
-        for (var j=0; j < this.replica_list.length; j++) {
-            this.execution_matrix[i][j] = 0;
+        // initializing variables inner values
+        for (var i = 0; i < this.variable_list.length; i++) {
+            this.variable_list[i].inner_value = 0;
         }
-    }
 
-    
-    for (var k=0; k < this.update_list.length; k++) {// update list loop
-        if ((this.update_list[k].to_time_stamp <= time_stamp)&&(this.update_list[k].to_replica == replica_id)){
-            temp_update_list.push( this.update_list[k]);                
-        }//if
-    }// k for
-
-    // we sort the comming updates to the desired replica so we can execute them in the right order
-    temp_update_list = this.sort_update_list(temp_update_list);
-    
-    //perform all self operations on the replica till the time_stamp 
-    this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id],time_stamp);
-
-    //performing all the updates on the replica
-    for (var j=0; j < temp_update_list.length; j++){
-        this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);
-        this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
-    }
-    
-    return this.variable_list[replica_id].inner_value;
-
-}
-
-sort_update_list(list : update[]): update[]{
-    var temp : update;
-    for (var i=0; i < list.length; i++) {
-        for (var j=i+1; j < list.length; j++) {
-            if (list[i].to_time_stamp > list[j].to_time_stamp){
-                temp = list[i];
-                list[i] = list[j];
-                list[j] = temp;
+        //initializing execution matrix
+        this.execution_matrix = [];
+        for (var i = 0; i < this.replica_list.length; i++) {
+            this.execution_matrix[i] = [];
+            for (var j = 0; j < this.replica_list.length; j++) {
+                this.execution_matrix[i][j] = 0;
             }
         }
+
+
+        for (var k = 0; k < this.update_list.length; k++) {// update list loop
+            if ((this.update_list[k].to_time_stamp <= time_stamp) && (this.update_list[k].to_replica == replica_id)) {
+                temp_update_list.push(this.update_list[k]);
+            }//if
+        }// k for
+
+        // we sort the comming updates to the desired replica so we can execute them in the right order
+        temp_update_list = this.sort_update_list(temp_update_list);
+
+        //perform all self operations on the replica till the time_stamp
+        this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);
+
+        //performing all the updates on the replica
+        for (var j = 0; j < temp_update_list.length; j++) {
+            this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);
+            this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
+        }
+
+        return this.variable_list[replica_id].inner_value;
+
     }
-    return(list);
-}
+
+    sort_update_list(list: update[]): update[] {
+        var temp: update;
+        for (var i = 0; i < list.length; i++) {
+            for (var j = i + 1; j < list.length; j++) {
+                if (list[i].to_time_stamp > list[j].to_time_stamp) {
+                    temp = list[i];
+                    list[i] = list[j];
+                    list[j] = temp;
+                }
+            }
+        }
+        return (list);
+    }
+
+
+////// rasha can you put this method in the right position in the code please.
+///// it's the default operation
+
+    default_Operation(): string {
+        return "increment";
+    }
 
 
 }

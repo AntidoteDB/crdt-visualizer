@@ -3,6 +3,7 @@ import {Arrow, Group, Rect, Text} from 'react-konva';
 import Operation from "./Operation";
 import TooltipForState from "./ToolTipForState";
 import visualizer from "../classes/visualizer";
+import {operation} from "../classes/operation";
 
 
 interface States {
@@ -21,7 +22,9 @@ interface Props {
     points: number[];
     name: string;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
-    visualizer?: visualizer;
+    onMouseDown: () => void;
+    onMouseUp: () => void;
+    visualizer: visualizer;
 }
 
 class Replica extends React.Component<Props, States> {
@@ -49,6 +52,8 @@ class Replica extends React.Component<Props, States> {
                 points={this.props.points} onClick={this.addOp}
                 onMouseOver={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}
+                onMouseDown={this.props.onMouseDown}
+                onMouseUp={this.props.onMouseUp}
             />
             <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
                   height={30} width={30} fill={'Tomato'} stroke={'black'}
@@ -88,26 +93,41 @@ class Replica extends React.Component<Props, States> {
             y: e.evt.clientY,
             radius: 20,
             fill: '#207192',
-            onOperationClick: this.props.onOperationClick
+            onOperationClick: this.props.onOperationClick,
+            visualizer: this.props.visualizer
         }
         let op1 = new Operation(op);
         let act = this.state.operations;
         let newState = act.concat(op1);
         this.setState({operations: newState});
-
+        var y = 0;
+        switch (this.props.name) {
+            case "R1": {
+                y = 0;
+                break;
+            }
+            case "R2": {
+                y = 1;
+                break;
+            }
+            case "R3": {
+                y = 2;
+                break;
+            }
+        }
+        let newOp = new operation(op1.state.operation, op1.props.x);
+        this.props.visualizer.add_operation(y, newOp)
 
     }
 
     removeOp(o: Operation) {
         let Ops_state = this.state.operations;
-        console.log(Ops_state.slice());
         let i = 0;
         for (i; i < Ops_state.slice().length; i++) {
             if (Ops_state.slice()[i].state.x == o.state.x && Ops_state.slice()[i].state.y == o.state.y)
                 Ops_state.splice(i, 1);
         }
         this.setState({operations: Ops_state.slice()});
-        console.log(this.state.operations)
     }
 
     onMouseEnter = (e: any) => {

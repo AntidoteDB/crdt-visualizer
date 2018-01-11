@@ -26,14 +26,14 @@ interface Props {
     fill: string;
     replica: Replica;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
-    visualizer?: visualizer;
+    visualizer: visualizer;
 }
 
 class Operation extends React.Component<Props, States> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isMouseOver: false, operation: 'Operation',
+            isMouseOver: false, operation: this.props.visualizer!.default_Operation(),
             replica: this.props.replica,
             radius: this.props.radius, fill: this.props.fill,
             x: this.props.x,

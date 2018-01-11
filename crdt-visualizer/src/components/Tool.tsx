@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {Stage} from 'react-konva';
 import Graph from './Graph';
-import UpdateLayer from "./UpdateLayer";
 import Operation from "./Operation";
 import visualizer from "../classes/visualizer";
 import {operation} from "../classes/operation";
@@ -42,11 +40,11 @@ class Tool extends React.Component <Props, States> {
 
         return (
             <div>
-                <Stage x={0} y={0} height={window.innerHeight} width={window.innerWidth}>
-                    <UpdateLayer onOperationClick={this.handleTextDblClick}/>
-                    <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
 
-                </Stage>
+
+                <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
+
+
                 <textarea
                     value={this.state.textValue}
                     style={{
@@ -70,7 +68,7 @@ class Tool extends React.Component <Props, States> {
                         cursor: 'wait',
                         opacity: 0.7,
                         borderRadius: 25 + 'px',
-                    }}><b>Danger!</b> {this.state.errorMessage} is not a valid Operation.
+                    }}><b>{this.state.errorMessage}</b> is not a valid Operation.
                     </div>
                 </div>
 
@@ -130,13 +128,12 @@ class Tool extends React.Component <Props, States> {
                     setTimeout(() => {
                         this.setState({ErrorVisible: false});
                     }, 3000);
-                    this.state.op!.setState({fill: '#207192', operation: "operation"});
+                    this.state.op!.setState({fill: '#207192', operation: this.state.visualizer.default_Operation()});
                     this.setState({ErrorVisible: true});
                     this.setState({errorMessage: newOp.operation});
                 }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
                 this.state.visualizer.add_operation(y, newOp)
-                this.state.visualizer.execute_updates();
             }
         }
     };

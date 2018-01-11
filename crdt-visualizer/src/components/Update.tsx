@@ -1,7 +1,5 @@
 import * as React from 'react';
 import {Arrow, Group} from 'react-konva';
-import RemoveUpdate from "./removeUpdate";
-import UpdateLayer from "./UpdateLayer";
 
 
 interface State {
@@ -16,7 +14,6 @@ interface Props {
     fromY: number;
     toX: number;
     toY: number;
-    updateLayer: UpdateLayer;
 }
 
 class Update extends React.Component <Props, State> {
@@ -34,16 +31,12 @@ class Update extends React.Component <Props, State> {
         return (
             <Group>
                 <Arrow points={[this.props.fromX, this.props.fromY, this.props.toX, this.props.toY]}
-                       stroke={'green'} strokeWidth={2} lineJoin={'round'} dash={[10, 10]}/>
-                <RemoveUpdate x={(this.props.toX + this.props.fromX) / 2}
-                              y={(this.props.toY + this.props.fromY) / 2} radius={10} update={this}/>
+                       stroke={'red'} strokeWidth={2} lineJoin={'round'} dash={[10, 10]}/>
             </Group>
         )
     }
 
-    remove = () => {
-        this.props.updateLayer.remove(this)
-    }
+
 }
 
 export default Update;
