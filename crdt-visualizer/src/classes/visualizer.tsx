@@ -254,8 +254,8 @@ export default class visualizer {
 ///// it's the default operation
 
     default_Operation(): string {
-        return "increment";
-    }
+            return "increment";
+        }
 
 
 }
