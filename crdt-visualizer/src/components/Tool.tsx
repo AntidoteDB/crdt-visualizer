@@ -128,7 +128,7 @@ class Tool extends React.Component <Props, States> {
                     setTimeout(() => {
                         this.setState({ErrorVisible: false});
                     }, 3000);
-                    this.state.op!.setState({fill: '#207192', operation: this.state.visualizer.default_Operation()});
+                    this.state.op!.setState({operation: this.state.visualizer.default_Operation()});
                     this.setState({ErrorVisible: true});
                     this.setState({errorMessage: newOp.operation});
                 }
