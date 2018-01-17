@@ -1,6 +1,6 @@
 import {operation} from './operation';
-
-export class counter {
+import {CRDT_type} from './CRDT_type';
+export class counter extends CRDT_type {
 
 //---------- Properties---------------------    
 
@@ -13,6 +13,7 @@ export class counter {
 
 //////////CONSTRUCTOR///////////////////////
     constructor(id: number) {
+        super();
         this.inner_value = 0;
         this.id = id;
     }
@@ -71,7 +72,7 @@ export class counter {
     }
 
 //-----------------------------------------------------------
-    getOp(op_time: number) {
+    getOp(op_time: number) : operation|null {
         var index: number = -1;
         for (var i = 0; i < this.operation_list.length; i++) {
             if (op_time == this.operation_list[i].time_stamp) {
