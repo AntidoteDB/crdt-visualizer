@@ -140,6 +140,7 @@ class Graph extends React.Component <Props, States> {
         };
         let x = this.state.updates;
         if (this.state.fromReplica != this.state.toReplica &&
+            this.state.toX>this.state.fromX&&
             typeof this.state.fromReplica == 'number' &&
             typeof this.state.toReplica == 'number') {
             this.setState({isDrawing: false, updates: x.concat(new Update(a))});

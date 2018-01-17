@@ -92,7 +92,7 @@ class Replica extends React.Component<Props, States> {
             x: e.evt.clientX,
             y: e.evt.clientY,
             radius: 20,
-            fill: '#207192',
+            fill: '#3CB371',
             onOperationClick: this.props.onOperationClick,
             visualizer: this.props.visualizer
         }
