@@ -200,13 +200,13 @@ export default class visualizer {
         temp_update_list = this.sort_update_list(temp_update_list);
 
         if (temp_update_list.length == 0) {
-            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);	202.	            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);
+            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);	
         } else {
             //performing all the updates on the replica
 	        for (var j = 0; j < temp_update_list.length; j++) {	                       
-                this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);	207.	                this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], temp_update_list[j].to_time_stamp);
-    	        this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;	208.	                this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);
-    	        this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
+                this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);	
+                this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], temp_update_list[j].to_time_stamp);
+                this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
     	        this.execution_matrix[replica_id][replica_id] = temp_update_list[j].to_time_stamp;
     	           
     	    }
