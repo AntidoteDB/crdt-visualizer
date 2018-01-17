@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Circle, Group, Text} from 'react-konva';
 import Tooltip from "./Tooltip";
-import Remove from "./Remove";
 import Replica from "./Replica";
 import visualizer from "../classes/visualizer";
 
@@ -17,6 +16,8 @@ interface States {
     isDragging: boolean;
     currentX: number;
     currentY: number;
+    currentOperation:Operation;
+    deleted:boolean;
 }
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
     replica: Replica;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
     visualizer: visualizer;
+    uid?:any;
 }
 
 class Operation extends React.Component<Props, States> {
@@ -40,7 +42,9 @@ class Operation extends React.Component<Props, States> {
             y: this.props.y,
             isDragging: false,
             currentX: 0,
-            currentY: 0
+            currentY: 0,
+            currentOperation:this,
+            deleted:false
         }
     }
 
@@ -67,10 +71,6 @@ class Operation extends React.Component<Props, States> {
                           padding={-3} align={'center'} height={30} width={30}/>
 
                 </Group>
-                <Remove operation={this}
-                        x={this.state.x + this.props.radius}
-                        y={this.props.y - this.props.radius}
-                        radius={this.props.radius / 2.5}/>
                 <Tooltip x={this.state.x - this.props.radius - 40}
                          y={this.props.y - this.props.radius - 40} text={this.state.operation}
                          visible={this.state.isMouseOver ? true : false}/>
@@ -83,13 +83,6 @@ class Operation extends React.Component<Props, States> {
     onMouseLeave = () => {
         this.setState({isMouseOver: false})
     }
-
-    remove() {
-        this.state.replica.removeOp(this);
-        this.props.visualizer!.remove_operation(this.props.replica.getReplicaId(), this.state.x);
-        this.props.visualizer!.execute_updates();
-    }
-
     onClickHandel = (e: any, op: string, operation: Operation) => {
         this.props.onOperationClick(e, op, operation);
     }
@@ -100,12 +93,18 @@ class Operation extends React.Component<Props, States> {
 
     }
     onDragStart = () => {
-        this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y})
+        this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y, currentOperation:this});
+        this.state.replica.setState({RemVisible:true});
+        console.log(this.state.currentOperation);
     }
     dragMove = (e: any) => {
         if (this.state.isDragging) {
-            if (this.state.x > 700 || this.state.x < 100) {
+            if (this.state.x < 100) {
                 this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false});
+            }
+            else if (this.state.x >= 700) {
+                this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false, deleted:true});
+                this.state.replica.removeOp(this.state.currentOperation);
             }
             else {
                 this.setState({x: e.evt.clientX});
@@ -113,8 +112,9 @@ class Operation extends React.Component<Props, States> {
         }
     }
     onDragEnd = () => {
+        this.setState({isDragging:false});
         this.props.visualizer!.move_operation(this.state.replica.getReplicaId(), this.state.currentX, this.state.x);
-        this.props.visualizer!.execute_updates();
+        this.state.replica.setState({RemVisible:false});
     }
 }
 

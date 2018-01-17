@@ -256,7 +256,9 @@ export default class visualizer {
     default_Operation(): string {
             return "increment";
         }
-
+    get_DataType_Name(): string {
+        return "counter";
+    }
 
 }
 

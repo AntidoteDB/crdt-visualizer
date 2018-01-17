@@ -4,6 +4,7 @@ import Operation from "./Operation";
 import TooltipForState from "./ToolTipForState";
 import visualizer from "../classes/visualizer";
 import {operation} from "../classes/operation";
+import Remove from './Remove';
 
 
 interface States {
@@ -16,6 +17,7 @@ interface States {
     isMouseOver: boolean;
     MouseX: number;
     MouseY: number;
+    RemVisible:boolean
 }
 
 interface Props {
@@ -39,7 +41,8 @@ class Replica extends React.Component<Props, States> {
             operations: [],
             isMouseOver: false,
             MouseX: 0,
-            MouseY: 0
+            MouseY: 0,
+            RemVisible:false
         }
     }
 
@@ -58,26 +61,29 @@ class Replica extends React.Component<Props, States> {
             <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
                   height={30} width={30} fill={'Tomato'} stroke={'black'}
             />
+
             <Text text={this.props.name} fill={'black'}
                   x={this.props.points[0] - 30} y={this.props.points[1] - 15}
                   fontSize={15} fontFamily={'Calibri'}
                   padding={5} align={'center'} height={30} width={30}
             />
+            <Remove x={this.props.points[2]} y={this.props.points[3]-25} visible={this.state.RemVisible} />
 
 
-            {this.state.operations.map((operation, index) =>
+            {   this.state.operations.length>0?
+                this.state.operations.map((operation, index) =>
                 <Operation
                     replica={this} x={operation.state.x} y={operation.state.y}
                     radius={operation.state.radius}
                     fill={operation.state.fill}
                     key={index} onOperationClick={this.props.onOperationClick}
                     visualizer={this.props.visualizer}
-                />)}
+                />):null}
             <TooltipForState
                 x={this.state.MouseX}
                 y={this.state.MouseY}
-                text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
-                state={'State:' + this.props.visualizer!.value(this.getReplicaId(), this.state.MouseX)}
+                text={'Timestamp:  ' + (this.state.MouseX - this.props.points[0]).toString()}
+                state={'State:  ' + this.props.visualizer!.value(this.getReplicaId(), this.state.MouseX)}
                 visible={this.state.isMouseOver ? true : false}
             />
 
@@ -120,14 +126,18 @@ class Replica extends React.Component<Props, States> {
 
     }
 
+
+
     removeOp(o: Operation) {
-        let Ops_state = this.state.operations;
+        console.log(this.state.operations)
+        let Ops_state = this.state.operations.slice();
         let i = 0;
-        for (i; i < Ops_state.slice().length; i++) {
-            if (Ops_state.slice()[i].state.x == o.state.x && Ops_state.slice()[i].state.y == o.state.y)
+        for (i; i < Ops_state.length; i++) {
+            if (Ops_state[i].props.x == o.props.x && Ops_state[i].props.y == o.props.y)
                 Ops_state.splice(i, 1);
         }
-        this.setState({operations: Ops_state.slice()});
+        this.setState({operations: Ops_state});
+        this.props.visualizer.remove_operation(o.props.replica.getReplicaId(),o.state.x)
     }
 
     onMouseEnter = (e: any) => {
