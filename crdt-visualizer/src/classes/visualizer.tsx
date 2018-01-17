@@ -2,11 +2,11 @@ import {replica} from './replica';
 import {operation} from './operation';
 import {update} from './update';
 import {counter} from './counter';
-
+import {CRDT_type} from './CRDT_type';
 export default class visualizer {
 
 //---------- Properties---------------------
-    public variable_list: counter [] = [];
+    public variable_list: CRDT_type [] = [];
     public replica_list: replica [] = [];
     public update_list: update [] = [];
     public execution_matrix: number [][];
@@ -15,12 +15,19 @@ export default class visualizer {
     constructor() {
         //???????? should we read the replica_num and var_num here from the json file or pass them as input for the constrictor???????????????ß
         var replica_num: number = 3;
-
+        var CRDT_TYPE_ENUMERATION : number = 1; // counter
         //initializing replicas and variables
 
-        for (var i = 0; i < replica_num; i++) {
-            this.add_replica(i);
-            this.variable_list.push(new counter(i));
+       //initializing replicas and variables
+        switch (CRDT_TYPE_ENUMERATION) {
+    	            case 1: //counter
+                    for (var i = 0; i < replica_num; i++) {
+                    this.add_replica(i);
+                    this.variable_list.push(new counter(i));
+                }
+               case 2://set
+    	
+        	
         }
 
         //initializing execution matrix
@@ -161,36 +168,6 @@ export default class visualizer {
 //----------------------------------------------------------------------------------------
 
 
-//-------------------------------------------
-// we can easily add time_stamp to execute the operations till a given time point!!!!!!!!!
-    execute_operation(source_replica: number, from_time_stamp: number, destination_replica: number, to_time_stamp: number) {
-
-        ///1//////apply operations from source on source -downstream-
-        if (this.variable_list[source_replica].execute_operations(this.execution_matrix[source_replica][source_replica], from_time_stamp)) {
-            // update the matrix
-            this.execution_matrix[source_replica][source_replica] = from_time_stamp;
-        }
-
-        ///2/////apply the operations of both source replica and destination replica on destination replica
-        ///2.1 ///apply operations from source replica on destination replica
-        for (var i = 0; i < this.variable_list[source_replica].operation_list.length; i++) {
-            if (this.variable_list[source_replica].operation_list[i].time_stamp <= from_time_stamp) {
-                this.variable_list[source_replica].operation_list[i].apply(this.variable_list[destination_replica]);
-            }
-
-        }
-        //update the matrix
-        this.execution_matrix[source_replica][destination_replica] = from_time_stamp;
-
-        ///2.2 ///apply operations from destiation replica on destination replica
-        if (this.variable_list[destination_replica].execute_operations(this.execution_matrix[destination_replica][destination_replica], to_time_stamp)) {
-            // update the matrix
-            this.execution_matrix[destination_replica][destination_replica] = to_time_stamp;
-        }
-        /// Add the time stamp to the execution matrix
-        //this.execution_matrix[source_replica][source_replica] = from_time_stamp ;
-        //this.execution_matrix[source_replica][destination_replica] = to_time_stamp ;
-    }
 
 
 //---------------Query--------------------
@@ -222,14 +199,19 @@ export default class visualizer {
         // we sort the comming updates to the desired replica so we can execute them in the right order
         temp_update_list = this.sort_update_list(temp_update_list);
 
-        //perform all self operations on the replica till the time_stamp
-        this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);
-
-        //performing all the updates on the replica
-        for (var j = 0; j < temp_update_list.length; j++) {
-            this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);
-            this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
-        }
+        if (temp_update_list.length == 0) {
+            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);	202.	            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);
+        } else {
+            //performing all the updates on the replica
+	        for (var j = 0; j < temp_update_list.length; j++) {	                       
+                this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);	207.	                this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], temp_update_list[j].to_time_stamp);
+    	        this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;	208.	                this.variable_list[temp_update_list[j].from_replica].downstream(this.variable_list[replica_id], this.execution_matrix[temp_update_list[j].from_replica][replica_id], temp_update_list[j].from_time_stamp);
+    	        this.execution_matrix[temp_update_list[j].from_replica][replica_id] = temp_update_list[j].from_time_stamp;
+    	        this.execution_matrix[replica_id][replica_id] = temp_update_list[j].to_time_stamp;
+    	           
+    	    }
+    	            this.variable_list[replica_id].at_source(this.execution_matrix[replica_id][replica_id], time_stamp);
+        }	                
 
         return this.variable_list[replica_id].inner_value;
 
