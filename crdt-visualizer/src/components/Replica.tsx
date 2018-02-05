@@ -45,14 +45,13 @@ class Replica extends React.Component<Props, States> {
             RemVisible:false
         }
     }
-
     render() {
 
         return <Group>
-            <Arrow
+           <Arrow
                 fill={'black'} stroke={'black'} strokeWidth={4}
                 pointerLength={10} pointerWidth={10}
-                points={this.props.points} onClick={this.addOp}
+                points={this.props.points} onClick={(e)=>this.addOp(e)}
                 onMouseOver={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}
                 onMouseDown={this.props.onMouseDown}
@@ -71,12 +70,12 @@ class Replica extends React.Component<Props, States> {
 
 
             {   this.state.operations.length>0?
-                this.state.operations.map((operation, index) =>
+                this.state.operations.map((operation:Operation) =>
                 <Operation
                     replica={this} x={operation.state.x} y={operation.state.y}
                     radius={operation.state.radius}
                     fill={operation.state.fill}
-                    key={index} onOperationClick={this.props.onOperationClick}
+                    key={operation.props.x} onOperationClick={this.props.onOperationClick}
                     visualizer={this.props.visualizer}
                 />):null}
             <TooltipForState
@@ -93,7 +92,8 @@ class Replica extends React.Component<Props, States> {
     }
 
     addOp = (e: any) => {
-        let op = {
+
+        var op = {
             replica: this,
             x: e.evt.clientX,
             y: e.evt.clientY,
@@ -102,10 +102,11 @@ class Replica extends React.Component<Props, States> {
             onOperationClick: this.props.onOperationClick,
             visualizer: this.props.visualizer
         }
-        let op1 = new Operation(op);
-        let act = this.state.operations;
-        let newState = act.concat(op1);
-        this.setState({operations: newState});
+        var op1 = new Operation(op);
+        var act = this.state.operations;
+
+        act.push(op1);
+        this.setState({operations: act});
         var y = 0;
         switch (this.props.name) {
             case "R1": {
@@ -128,16 +129,13 @@ class Replica extends React.Component<Props, States> {
 
 
 
-    removeOp(o: Operation) {
-        console.log(this.state.operations)
-        let Ops_state = this.state.operations.slice();
-        let i = 0;
-        for (i; i < Ops_state.length; i++) {
-            if (Ops_state[i].props.x == o.props.x && Ops_state[i].props.y == o.props.y)
-                Ops_state.splice(i, 1);
-        }
-        this.setState({operations: Ops_state});
-        this.props.visualizer.remove_operation(o.props.replica.getReplicaId(),o.state.x)
+    removeOp(item:number){
+        var newState = this.state.operations;
+        newState = newState.filter( (el)=> {
+            return el.props.x !== item;
+        });
+
+            this.setState({operations: newState})
     }
 
     onMouseEnter = (e: any) => {

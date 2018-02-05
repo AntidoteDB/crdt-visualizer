@@ -16,8 +16,6 @@ interface States {
     isDragging: boolean;
     currentX: number;
     currentY: number;
-    currentOperation:Operation;
-    deleted:boolean;
 }
 
 interface Props {
@@ -28,7 +26,6 @@ interface Props {
     replica: Replica;
     onOperationClick: (e: any, operation_name: string, operation: Operation) => void;
     visualizer: visualizer;
-    uid?:any;
 }
 
 class Operation extends React.Component<Props, States> {
@@ -42,12 +39,9 @@ class Operation extends React.Component<Props, States> {
             y: this.props.y,
             isDragging: false,
             currentX: 0,
-            currentY: 0,
-            currentOperation:this,
-            deleted:false
+            currentY: 0
         }
     }
-
     render() {
         return (
             <Group draggable={true} onClick={(e) => this.onClickHandel(e, this.state.operation, this)}
@@ -93,9 +87,8 @@ class Operation extends React.Component<Props, States> {
 
     }
     onDragStart = () => {
-        this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y, currentOperation:this});
+        this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y});
         this.state.replica.setState({RemVisible:true});
-        console.log(this.state.currentOperation);
     }
     dragMove = (e: any) => {
         if (this.state.isDragging) {
@@ -103,8 +96,9 @@ class Operation extends React.Component<Props, States> {
                 this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false});
             }
             else if (this.state.x >= 700) {
-                this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false, deleted:true});
-                this.state.replica.removeOp(this.state.currentOperation);
+                this.setState({x: this.state.currentX, y: this.state.currentY, isDragging: false});
+                this.state.replica.removeOp(this.props.x);
+                this.state.replica.props.visualizer.remove_operation(this.props.replica.getReplicaId(),this.state.x);
             }
             else {
                 this.setState({x: e.evt.clientX});
