@@ -23,7 +23,7 @@ class Update extends React.Component <Props, State> {
             fromX: this.props.fromX,
             fromY: this.props.fromY,
             toX: this.props.toX,
-            toY: this.props.toY
+            toY: this.props.toY,
         }
     }
 
@@ -31,8 +31,12 @@ class Update extends React.Component <Props, State> {
         return (
             <Group>
                 <Arrow points={[this.props.fromX, this.props.fromY, this.props.toX, this.props.toY]}
-                       stroke={'red'} strokeWidth={2} lineJoin={'round'} dash={[10, 10]}/>
+                       stroke={'blue'} strokeWidth={2} lineJoin={'round'} dash={[10, 10]}
+                       draggable={true}
+               />
+
             </Group>
+
         )
     }
 

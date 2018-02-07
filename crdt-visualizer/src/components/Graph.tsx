@@ -7,6 +7,8 @@ import visualizer from "../classes/visualizer";
 import Update from "./Update";
 
 
+
+
 interface States {
     fromX: number;
     fromY: number;
@@ -57,6 +59,7 @@ class Graph extends React.Component <Props, States> {
                                 toX={this.state.toX}
                                 toY={this.state.toY}
 
+
                             /> : null
                         }
 
@@ -70,7 +73,7 @@ class Graph extends React.Component <Props, States> {
 
                 </Layer>
                 <Layer>
-                    <CrdtName x={300} y={10} name={'CRDT'}/>
+                    <CrdtName x={300} y={10} name={this.props.visualizer.get_DataType_Name()}/>
                 </Layer>
                 <Layer>
                     <Group>

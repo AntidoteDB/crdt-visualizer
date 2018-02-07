@@ -276,7 +276,9 @@ export default class visualizer {
             default : return "";
         }
         }
-
+    get_DataType_Name(): string {
+        return "counter";
+    }
 
 }
 
