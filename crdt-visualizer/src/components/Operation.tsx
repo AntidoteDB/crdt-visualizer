@@ -87,7 +87,7 @@ class Operation extends React.Component<Props, States> {
     remove() {
         this.state.replica.removeOp(this);
         this.props.visualizer!.remove_operation(this.props.replica.getReplicaId(), this.state.x);
-        this.props.visualizer!.execute_updates();
+        
     }
 
     onClickHandel = (e: any, op: string, operation: Operation) => {
@@ -114,7 +114,7 @@ class Operation extends React.Component<Props, States> {
     }
     onDragEnd = () => {
         this.props.visualizer!.move_operation(this.state.replica.getReplicaId(), this.state.currentX, this.state.x);
-        this.props.visualizer!.execute_updates();
+        
     }
 }
 

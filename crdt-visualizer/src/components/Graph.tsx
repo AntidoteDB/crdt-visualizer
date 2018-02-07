@@ -144,7 +144,7 @@ class Graph extends React.Component <Props, States> {
             typeof this.state.fromReplica == 'number' &&
             typeof this.state.toReplica == 'number') {
             this.setState({isDrawing: false, updates: x.concat(new Update(a))});
-            this.props.visualizer.add_update(this.state.fromReplica, this.state.fromX, this.state.toReplica, this.state.toX)
+            this.props.visualizer.add_merge(this.state.fromReplica, this.state.fromX, this.state.toReplica, this.state.toX)
         }
         else {
             this.setState({isDrawing: false});
