@@ -5,7 +5,7 @@ import {counter} from './counter';
 import {Addwinn_Set} from './Addwinn_Set';
 import {CRDT_type} from './CRDT_type';
 import {CRDT_downstream} from './CRDT_type';
-import {CRDT_state} from './CRDT_type';
+//import {CRDT_state} from './CRDT_type';
 export default class visualizer {
 
 //---------- Properties---------------------
@@ -162,7 +162,7 @@ export default class visualizer {
 
 
 
-    new_value(replica_id: number, time_stamp: number): CRDT_state{
+    new_value(replica_id: number, time_stamp: number): string{
         var ds: CRDT_downstream[]=[];
         // initializing variables state
         for (var i = 0; i < this.variable_list.length; i++) {
@@ -176,14 +176,15 @@ export default class visualizer {
         }
         console.log('---------------------VALUE--------------------------------');
         ds = this.get_downstream_effect(replica_id,time_stamp);
-        console.log(ds);
+        
         
         for(var i = 0; i < ds.length; i++){
             this.variable_list[replica_id].new_downstream(ds[i]);
             }
-            console.log('Variable state');
-        console.log(this.variable_list[replica_id].state);
-        return this.variable_list[replica_id].state;
+            
+        //console.log(this.variable_list[replica_id].state);
+        console.log('dispay result : '+this.variable_list[replica_id].display());
+        return this.variable_list[replica_id].display();
 
     }
 

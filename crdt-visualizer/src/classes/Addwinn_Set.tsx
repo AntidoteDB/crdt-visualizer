@@ -37,12 +37,10 @@ export class Addwinn_Set extends CRDT_type {
 			let newState: AddWinsSet_state = [];
 			for (let e1 of this.state) {
 				let removed = false;
-				//for (let e2 of downstream_effect.removed) {
 					if (e1.element === downstream_effect.removed_element) {
 						removed = true;
 						break;
 					}
-				//}
 				if (!removed) {
 					newState.push(e1);
 				}
@@ -50,33 +48,32 @@ export class Addwinn_Set extends CRDT_type {
 			this.state= newState;
 		}
        
-
     }
 
 
     new_at_source(operation_name: string, elem: string): AddWinsSet_Downstream {
-		console.log(elem);
+		
         if (operation_name == "remove") {
-			/* let R: string='';
-			for (var i = 0; i < this.state.length; i++) {
-				if (this.state[i].element == elem) {
-					console.log('equal found!');
-					R= this.state[i].element;
-				}
-				console.log('equal not  found!');
-			}            
-			console.log('R');
-			console.log(R); */
 			return {op: "remove", removed_element: elem};
 		} else {
 			this.last_tag++;
             let tag = this.last_tag;
-            console.log('aading : ');
 			return {op: "add", added: {element: elem, tag: tag}};
-        }
-        
+        }        
        
-    }
+	}
+
+	display(): string {
+		let result : string = '{ ';
+		for (var i=0 ; i< this.state.length;i++ ){
+			result += '( ' + this.state[i].element + ' , ' +this.state[i].tag + ' ) ';
+		}
+		result+=' }';
+		console.log('resutr : +' + result);
+		return result;
+	}
+	
+
 
 
 }

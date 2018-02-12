@@ -17,6 +17,7 @@ export class CRDT_type {
 
     new_downstream(downstream:CRDT_downstream){};
 
+    display():string{return '';};
 
     getOp(op_time: number): operation|null   {return null;}
     remove_op(op_time: number) {}

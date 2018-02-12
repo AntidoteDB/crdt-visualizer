@@ -87,6 +87,11 @@ export class counter extends CRDT_type {
         }
     }
 
+    display(): string {
+		let result : string = '{ ';
+		result = ''+this.state;
+		return result;
+	}
 
 
 
