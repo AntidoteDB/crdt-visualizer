@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Graph from './Graph';
-import Operation from "./Operation";
-import visualizer from "../classes/visualizer";
-import {operation} from "../classes/operation";
+import Operation from './Operation';
+import visualizer from '../classes/visualizer';
+import {operation} from '../classes/operation';
 
 
 interface States {
@@ -18,20 +18,19 @@ interface States {
 }
 
 interface Props {
+    crdt_Type_enum:number
 }
 
-
 class Tool extends React.Component <Props, States> {
-
     constructor(props: Props) {
-        super(props)
+        super(props);
         this.state = {
             textEditVisible: false,
             ErrorVisible: false,
             textX: 0,
             textY: 0,
             textValue: '',
-            visualizer: new visualizer(2)
+            visualizer: new visualizer(this.props.crdt_Type_enum),
         };
 
     }
@@ -40,23 +39,31 @@ class Tool extends React.Component <Props, States> {
 
         return (
             <div>
-
-
                 <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
-
-
-                <textarea
+                <input list={'browsers'}
                     value={this.state.textValue}
                     style={{
                         display: this.state.textEditVisible ? 'block' : 'none',
                         position: 'absolute',
                         top: this.state.textY + 'px',
-                        left: this.state.textX + 'px'
+                        left: this.state.textX + 'px',
+                        borderBottom:'2px solid red',
+                        width:'auto',
+                        padding: '20px -200px',
+                        fontSize:'20px',
+                        margin:'30px 0'
+
                     }}
                     onChange={this.handleTextEdit}
                     onKeyDown={this.handleTextareaKeyDown}
+
                 />
+         <datalist id={'browsers'}>
+             {this.state.visualizer.getValidOperations().map((value:string)=>
+            <option value={value}></option>)}
+         </datalist>
                 <div>
+
                     <div style={{
                         display: this.state.ErrorVisible ? 'block' : 'none',
                         position: 'absolute',
@@ -70,6 +77,9 @@ class Tool extends React.Component <Props, States> {
                         borderRadius: 25 + 'px',
                     }}><b>{this.state.errorMessage}</b> is not a valid Operation.
                     </div>
+
+
+
                 </div>
 
             </div>
@@ -102,28 +112,28 @@ class Tool extends React.Component <Props, States> {
             var x = this.state.op.props.replica.props.name;
             var y = 0;
             switch (x) {
-                case "R1": {
+                case 'R1': {
                     y = 0;
                     break;
                 }
-                case "R2": {
+                case 'R2': {
                     y = 1;
                     break;
                 }
-                case "R3": {
+                case 'R3': {
                     y = 2;
                     break;
                 }
             }
             let opName = this.state.op.state.operation;
-            if (this.state.visualizer.getOp(y,this.state.op.state.x) === null ||
-                ( this.state.visualizer.getOp(y,this.state.op.state.x)!.time_stamp === this.state.op.state.x
-                    && this.state.visualizer.getOp(y,this.state.op.state.x)!.operation != opName)
+            if (this.state.visualizer.getOp(y, this.state.op.state.x) === null ||
+                ( this.state.visualizer.getOp(y, this.state.op.state.x)!.time_stamp === this.state.op.state.x
+                    && this.state.visualizer.getOp(y, this.state.op.state.x)!.operation != opName)
             ) {
                 let newOp = new operation(opName, this.state.op.state.x);
-                if (newOp.is_valid_operation(newOp.operation,2)) {
+                if (newOp.is_valid_operation(newOp.operation, this.props.crdt_Type_enum)) {
                     this.state.op.setState({fill: '#3CB371'});
-                    this.setState({errorMessage: ""});
+                    this.setState({errorMessage: ''});
                 } else {
                     setTimeout(() => {
                         this.setState({ErrorVisible: false});
@@ -134,7 +144,7 @@ class Tool extends React.Component <Props, States> {
                     this.setState({errorMessage: newOp.operation});
                 }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
-                this.state.visualizer.add_operation(y, newOp)
+                this.state.visualizer.add_operation(y, newOp);
             }
         }
     };

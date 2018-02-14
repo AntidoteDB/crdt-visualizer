@@ -89,6 +89,7 @@ class Operation extends React.Component<Props, States> {
     onDragStart = () => {
         this.setState({isDragging: true, currentX: this.state.x, currentY: this.state.y});
         this.state.replica.setState({RemVisible:true});
+        this.state.replica.props.graph.setState({Operation_dragging:true})
     }
     dragMove = (e: any) => {
         if (this.state.isDragging) {
@@ -109,6 +110,7 @@ class Operation extends React.Component<Props, States> {
         this.setState({isDragging:false});
         this.props.visualizer!.move_operation(this.state.replica.getReplicaId(), this.state.currentX, this.state.x);
         this.state.replica.setState({RemVisible:false});
+        this.state.replica.props.graph.setState({Operation_dragging:false})
     }
 }
 

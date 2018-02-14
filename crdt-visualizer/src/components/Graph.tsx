@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {Group, Layer, Stage, Rect} from 'react-konva';
 import Replica from './Replica';
-import CrdtName from "./CrdtName";
-import Operation from "./Operation";
-import visualizer from "../classes/visualizer";
-import Update from "./Update";
-
-
+import CrdtName from './CrdtName';
+import Operation from './Operation';
+import visualizer from '../classes/visualizer';
+import Update from './Update';
+import RemoveUpdate from './RemoveUpdate';
+import TooltipForState from './ToolTipForState';
 
 
 interface States {
@@ -18,6 +18,8 @@ interface States {
     toReplica: number | string;
     isDrawing: boolean;
     updates: Update[];
+    isDragging: boolean;
+    Operation_dragging: boolean;
 }
 
 
@@ -35,11 +37,13 @@ class Graph extends React.Component <Props, States> {
             fromY: 0,
             toX: 0,
             toY: 0,
-            fromReplica: "no replica",
-            toReplica: "no replica",
+            fromReplica: 'no replica',
+            toReplica: 'no replica',
             isDrawing: false,
-            updates: []
-        }
+            updates: [],
+            isDragging: false,
+            Operation_dragging: false
+        };
 
     }
 
@@ -51,6 +55,7 @@ class Graph extends React.Component <Props, States> {
                    onMouseUp={this.onmouseup}>
                 <Layer x={0} y={0} height={window.innerHeight} width={window.innerWidth} onMouseMove={this.onmousemove}>
                     <Rect x={0} y={0} width={window.innerWidth} height={window.innerHeight}></Rect>
+                    <RemoveUpdate x={710} y={90} visible={this.state.isDragging}/>
                     <Group>
                         {this.state.isDrawing ?
                             <Update
@@ -58,6 +63,10 @@ class Graph extends React.Component <Props, States> {
                                 fromY={this.state.fromY}
                                 toX={this.state.toX}
                                 toY={this.state.toY}
+                                graph={this}
+                                visualizer={this.props.visualizer}
+                                fromReplica={this.state.fromReplica}
+                                toReplica={this.state.toReplica}
 
 
                             /> : null
@@ -65,7 +74,7 @@ class Graph extends React.Component <Props, States> {
 
                     </Group>
                     {this.state.updates.map((update, index) =>
-                        <Group key={index}>
+                        <Group key={update.props.fromX}>
                             {update.render()}
                         </Group>
                     )}
@@ -81,48 +90,61 @@ class Graph extends React.Component <Props, States> {
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
-                                     this.setState({fromReplica: 0})
+                                     this.setState({fromReplica: 0});
                                  }}
                                  onMouseUp={() => {
                                      this.setState({toReplica: 0});
                                      setTimeout(() => {
-                                         this.setState({fromReplica: "no replica", toReplica: "no replica"});
+                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
                                      }, 1000);
-                                 }}/>
+                                 }} graph={this}/>
                         <Replica points={[100, 200, 700, 200]} name={'R2'}
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
-                                     this.setState({fromReplica: 1})
+                                     this.setState({fromReplica: 1});
                                  }}
                                  onMouseUp={() => {
                                      this.setState({toReplica: 1});
                                      setTimeout(() => {
-                                         this.setState({fromReplica: "no replica", toReplica: "no replica"});
+                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
                                      }, 1000);
-                                 }}/>
+                                 }} graph={this}/>
                         <Replica points={[100, 300, 700, 300]} name={'R3'}
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
-                                     this.setState({fromReplica: 2})
+                                     this.setState({fromReplica: 2});
                                  }}
                                  onMouseUp={() => {
                                      this.setState({toReplica: 2})
                                      ;
                                      setTimeout(() => {
-                                         this.setState({fromReplica: "no replica", toReplica: "no replica"});
+                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
                                      }, 1000);
-                                 }}/>
+                                 }} graph={this}/>
                     </Group>
+
+                    <TooltipForState x={800} y={50}
+                                     state={this.props.visualizer.new_value(0, 700)}
+                                     text={'State:'}
+                                     visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
+                    <TooltipForState x={800} y={150}
+                                     state={this.props.visualizer.new_value(1, 700)}
+                                     text={'State:'}
+                                     visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
+                    <TooltipForState x={800} y={250}
+                                     state={this.props.visualizer.new_value(2, 700)}
+                                     text={'State:'}
+                                     visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
                 </Layer>
             </Stage>
-        )
+        );
 
     }
 
     onMouseDown = (e: any) => {
-        if (this.state.fromReplica === "no replica") {
+        if (this.state.fromReplica === 'no replica') {
             return;
         }
         this.setState({
@@ -130,34 +152,54 @@ class Graph extends React.Component <Props, States> {
             fromY: e.evt.clientY, toX: e.evt.clientX, toY: e.evt.clientY
         });
 
-
-    }
-    onmouseup = () => {
-        if (this.state.toReplica === "no replica") {
+    };
+    onmouseup = (e: any) => {
+        this.setToReplica(e.evt);
+        if (this.state.toReplica === 'no replica') {
             this.setState({isDrawing: false});
-            return
+            return;
         }
         let a = {
             fromX: this.state.fromX, fromY: this.state.fromY,
-            toX: this.state.toX, toY: this.state.toY
+            toX: this.state.toX, toY: this.state.toY,
+            graph: this,
+            visualizer: this.props.visualizer,
+            fromReplica: this.state.fromReplica,
+            toReplica: this.state.toReplica
         };
         let x = this.state.updates;
         if (this.state.fromReplica != this.state.toReplica &&
-            this.state.toX>this.state.fromX&&
+            this.state.toX > this.state.fromX &&
             typeof this.state.fromReplica == 'number' &&
             typeof this.state.toReplica == 'number') {
             this.setState({isDrawing: false, updates: x.concat(new Update(a))});
-            this.props.visualizer.add_merge(this.state.fromReplica, this.state.fromX, this.state.toReplica, this.state.toX)
+            this.props.visualizer.add_merge(this.state.fromReplica, this.state.fromX, this.state.toReplica, this.state.toX);
         }
         else {
             this.setState({isDrawing: false});
         }
-    }
+    };
 
     onmousemove = (e: any) => {
         if (this.state.isDrawing) {
             this.setState({toX: e.evt.clientX, toY: e.evt.clientY});
         }
+    };
+
+    setToReplica(e: any) {
+        if (Math.abs(e.clientY - 100) < 10 && e.clientX < 700) {
+            this.setState({toReplica: 0});
+        }
+        if (Math.abs(e.clientY - 200) < 10 && e.clientX < 700) {
+            this.setState({toReplica: 1});
+        }
+        if (Math.abs(e.clientY - 300) < 10 && e.clientX < 700) {
+            this.setState({toReplica: 2});
+        }
+        setTimeout(() => {
+            this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
+        }, 1000);
+
     }
 }
 

@@ -4,7 +4,8 @@ import Tool from "./components/Tool";
 class App extends React.Component {
     render() {
         return (
-              <Tool/>
+              <Tool crdt_Type_enum={1}/>
+
             );
     }
 }

@@ -278,7 +278,23 @@ export default class visualizer {
         }
         }
     get_DataType_Name(): string {
-        return "counter";
+        switch (this.CRDT_TYPE_ENUMERATION){
+            case 1 :
+                return "counter";
+            case 2 :
+                return "Addwinn_Set ";
+            default : return "";
+        }
+    }
+
+    getValidOperations():[string]{
+        switch (this.CRDT_TYPE_ENUMERATION){
+            case 1 :
+                return ["increment","decrement"];
+            case 2 :
+                return ["add(any)","remove(any)"];
+            default : return [""];
+        }
     }
 
 }

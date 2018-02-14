@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ngui/auto-complete": "^0.16.1",
+    "@syncfusion/ej2-react-dropdowns": "^15.4.27",
+    "input-autocomplete": "^1.0.7",
     "konva": "^1.7.6",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-infinite-autocomplete": "^2.0.3",
     "react-konva": "^1.6.4",
     "react-scripts-ts": "2.8.0"
   },
