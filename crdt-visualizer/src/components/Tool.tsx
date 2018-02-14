@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {Stage} from 'react-konva';
 import Graph from './Graph';
-import UpdateLayer from "./UpdateLayer";
 import Operation from "./Operation";
 import visualizer from "../classes/visualizer";
 import {operation} from "../classes/operation";
@@ -33,7 +31,7 @@ class Tool extends React.Component <Props, States> {
             textX: 0,
             textY: 0,
             textValue: '',
-            visualizer: new visualizer()
+            visualizer: new visualizer(2)
         };
 
     }
@@ -42,11 +40,11 @@ class Tool extends React.Component <Props, States> {
 
         return (
             <div>
-                <Stage x={0} y={0} height={window.innerHeight} width={window.innerWidth}>
-                    <UpdateLayer onOperationClick={this.handleTextDblClick}/>
-                    <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
 
-                </Stage>
+
+                <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
+
+
                 <textarea
                     value={this.state.textValue}
                     style={{
@@ -70,7 +68,7 @@ class Tool extends React.Component <Props, States> {
                         cursor: 'wait',
                         opacity: 0.7,
                         borderRadius: 25 + 'px',
-                    }}><b>Danger!</b> {this.state.errorMessage} is not a valid Operation.
+                    }}><b>{this.state.errorMessage}</b> is not a valid Operation.
                     </div>
                 </div>
 
@@ -118,25 +116,25 @@ class Tool extends React.Component <Props, States> {
                 }
             }
             let opName = this.state.op.state.operation;
-            if (this.state.visualizer.variable_list[y].getOp(this.state.op.state.x) === null ||
-                ( this.state.visualizer.variable_list[y].getOp(this.state.op.state.x)!.time_stamp === this.state.op.state.x
-                    && this.state.visualizer.variable_list[y].getOp(this.state.op.state.x)!.operation != opName)
+            if (this.state.visualizer.getOp(y,this.state.op.state.x) === null ||
+                ( this.state.visualizer.getOp(y,this.state.op.state.x)!.time_stamp === this.state.op.state.x
+                    && this.state.visualizer.getOp(y,this.state.op.state.x)!.operation != opName)
             ) {
                 let newOp = new operation(opName, this.state.op.state.x);
-                if (newOp.is_valid_operation(newOp.operation)) {
+                if (newOp.is_valid_operation(newOp.operation,2)) {
                     this.state.op.setState({fill: '#3CB371'});
                     this.setState({errorMessage: ""});
                 } else {
                     setTimeout(() => {
                         this.setState({ErrorVisible: false});
                     }, 3000);
-                    this.state.op!.setState({fill: '#207192', operation: "operation"});
+                    this.state.op!.setState({operation: this.state.visualizer.default_Operation()});
+                    newOp.parse_parameter(newOp.operation);
                     this.setState({ErrorVisible: true});
                     this.setState({errorMessage: newOp.operation});
                 }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
                 this.state.visualizer.add_operation(y, newOp)
-                this.state.visualizer.execute_updates();
             }
         }
     };

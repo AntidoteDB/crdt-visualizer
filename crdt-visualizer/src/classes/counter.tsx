@@ -1,61 +1,50 @@
 import {operation} from './operation';
+import {CRDT_type} from './CRDT_type';
+export type counter_downstream = number;
+export type counter_state = number;
 
-export class counter {
+export class counter extends CRDT_type {
 
 //---------- Properties---------------------    
 
-    inner_value: number;
-    id: number;
+    state: counter_state;    
     public operation_list: operation [] = [];
 
 
 //----------Metods--------------------------
 
 //////////CONSTRUCTOR///////////////////////
-    constructor(id: number) {
-        this.inner_value = 0;
-        this.id = id;
+    constructor() {
+        super();
+        this.state = 0;
+        
     }
 
-    downstream(c: counter, lower_time: number, upper_time: number) {
-        this.operation_sort();
-        for (var i = 0; i < this.operation_list.length; i++) {
-
-            if ((this.operation_list[i].time_stamp > lower_time) && ( this.operation_list[i].time_stamp <= upper_time)) {
-                this.operation_list[i].apply(c);
-            }
-        }
+    init(){
+        this.state=0;
+    }
+    new_downstream(downstream_effect: counter_downstream):number{
+       // console.log('operation execute ' + this.state+ downstream_effect);
+       var r : number;
+       r= this.state + downstream_effect;
+       //console.log('the inner valie ' + r);
+       this.state= r;
+        return r;
 
     }
-
-
-    at_source(lower_time: number, upper_time: number) {
-
-        this.operation_sort();
-        for (var i = 0; i < this.operation_list.length; i++) {
-
-            if ((this.operation_list[i].time_stamp > lower_time) && ( this.operation_list[i].time_stamp <= upper_time)) {
-                this.operation_list[i].apply(this);
-            }
+    new_at_source(operation_name: string): counter_downstream {
+        let x: counter_downstream;
+       if (operation_name=="increment")
+       {    x= 1;
+           return x;
         }
-
+       else
+       { x= -1;
+        return x;}
     }
 
 //executes the operations in the operation arry and change the inner_state of the object -downstream-
-    execute_operations(lower_time: number, upper_time: number): boolean {
-        this.operation_sort();
-
-        for (var i = 0; i < this.operation_list.length; i++) {
-
-            if ((this.operation_list[i].time_stamp >= lower_time) && ( this.operation_list[i].time_stamp < upper_time)) {
-                this.operation_list[i].apply(this);
-            }
-        }
-        if (i > 0) {
-            return true;
-        }
-        return false;
-    }
+   
 
 //-----------------------------------------------------------
     remove_op(op_time: number) {
@@ -71,7 +60,7 @@ export class counter {
     }
 
 //-----------------------------------------------------------
-    getOp(op_time: number) {
+    getOp(op_time: number) : operation|null {
         var index: number = -1;
         for (var i = 0; i < this.operation_list.length; i++) {
             if (op_time == this.operation_list[i].time_stamp) {
@@ -98,15 +87,12 @@ export class counter {
         }
     }
 
-// increment the inner_state of this object by 1.
-    increment() {
-        this.inner_value = this.inner_value + 1;
-    }
+    display(): string {
+		let result : string = '{ ';
+		result = ''+this.state;
+		return result;
+	}
 
-// decrement the inner_state of this object by 1.
-    decrement() {
-        this.inner_value = this.inner_value - 1;
-    }
 
 
 }
