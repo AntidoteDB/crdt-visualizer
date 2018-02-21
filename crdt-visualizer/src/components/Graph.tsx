@@ -52,8 +52,8 @@ class Graph extends React.Component <Props, States> {
 
         return (
             <Stage x={0} y={0} height={window.innerHeight} width={window.innerWidth} onMouseDown={this.onMouseDown}
-                   onMouseUp={this.onmouseup}>
-                <Layer x={0} y={0} height={window.innerHeight} width={window.innerWidth} onMouseMove={this.onmousemove}>
+                   onMouseUp={this.onmouseup} >
+                <Layer x={0} y={0} height={400} width={1000} onMouseMove={this.onmousemove}>
                     <Rect x={0} y={0} width={window.innerWidth} height={window.innerHeight}></Rect>
                     <RemoveUpdate x={710} y={90} visible={this.state.isDragging}/>
                     <Group>
@@ -148,13 +148,14 @@ class Graph extends React.Component <Props, States> {
             return;
         }
         this.setState({
-            isDrawing: true, fromX: e.evt.clientX,
-            fromY: e.evt.clientY, toX: e.evt.clientX, toY: e.evt.clientY
+            isDrawing: true, fromX:e.target.getStage().getPointerPosition().x,
+            fromY:e.target.getStage().getPointerPosition().y, toX: e.target.getStage().getPointerPosition().x,
+            toY: e.target.getStage().getPointerPosition().y
         });
 
     };
     onmouseup = (e: any) => {
-        this.setToReplica(e.evt);
+        this.setToReplica(e);
         if (this.state.toReplica === 'no replica') {
             this.setState({isDrawing: false});
             return;
@@ -182,18 +183,18 @@ class Graph extends React.Component <Props, States> {
 
     onmousemove = (e: any) => {
         if (this.state.isDrawing) {
-            this.setState({toX: e.evt.clientX, toY: e.evt.clientY});
+            this.setState({toX: e.target.getStage().getPointerPosition().x, toY: e.target.getStage().getPointerPosition().y});
         }
     };
 
     setToReplica(e: any) {
-        if (Math.abs(e.clientY - 100) < 10 && e.clientX < 700) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 100) < 10 && e.target.getStage().getPointerPosition().x < 700) {
             this.setState({toReplica: 0});
         }
-        if (Math.abs(e.clientY - 200) < 10 && e.clientX < 700) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 200) < 10 && e.target.getStage().getPointerPosition().x < 700) {
             this.setState({toReplica: 1});
         }
-        if (Math.abs(e.clientY - 300) < 10 && e.clientX < 700) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 300) < 10 && e.target.getStage().getPointerPosition().x < 700) {
             this.setState({toReplica: 2});
         }
         setTimeout(() => {

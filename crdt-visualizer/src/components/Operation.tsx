@@ -102,7 +102,7 @@ class Operation extends React.Component<Props, States> {
                 this.state.replica.props.visualizer.remove_operation(this.props.replica.getReplicaId(),this.state.x);
             }
             else {
-                this.setState({x: e.evt.clientX});
+                this.setState({x: e.target.getStage().getPointerPosition().x});
             }
         }
     }

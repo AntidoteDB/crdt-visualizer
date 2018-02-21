@@ -19,13 +19,32 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>CRDT Visualizer</title>
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
+
+
+    <h1>CRDTs</h1>
+    <p> Antidote provides a library of CRDTs.
+      The interface of these CRDTs specify the operations
+      and the parameters that can be used for inspection and modification
+      of shared objects. In the following, we specify the supported
+      <code>{operation(), op_param()} </code>
+      pair for each of the supported CRDTs. The first element in the tuple specifies
+      the update operation, and the second item indicates the corresponding parameters.
+
+    </p>
+    <h5>antidote_crdt_counter</h5>
+    <code>{increment}</code>
+    <code>{decrement}</code>
+    <div id="counter" class="counter"></div>
+    <h5>addWinSet</h5>
+    <code>{add,any()}</code>
+    <code>{remove,any()}</code>
+    <div id="addWinSet" class="addWinSet"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -53,7 +53,7 @@ class Update extends React.Component <Props, State> {
     };
     handleDragEnd = (e: any) => {
         this.props.graph.setState({isDragging: false});
-        if (e.evt.clientX > 700) {
+        if (e.target.getStage().getPointerPosition().x > 700) {
             var Position = this.props.graph.state.updates.indexOf(this);
             this.props.graph.state.updates.splice(Position, 1);
             this.props.graph.setState({});

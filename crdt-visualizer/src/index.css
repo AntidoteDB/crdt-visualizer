@@ -1,8 +1,19 @@
 body {
-  margin: 0px;
-  padding: 0px;
   font-family: sans-serif;
-border: solid 3px black;
+
+}
+.counter{
+  border: solid 2px black;
+  width: 1000px;
   height: 400px;
-  width: 900px;
+  margin-top: 50px;
+  margin-left: 150px;
+
+}
+.addWinSet{
+  border: solid 2px black;
+  width: 1000px;
+  height: 400px;
+  margin-top: 50px;
+  margin-left: 150px;
 }

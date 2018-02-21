@@ -49,7 +49,7 @@ class Tool extends React.Component <Props, States> {
                         left: this.state.textX + 'px',
                         borderBottom:'2px solid red',
                         width:'auto',
-                        padding: '20px -200px',
+                        padding: '20px  ',
                         fontSize:'20px',
                         margin:'30px 0'
 
@@ -87,11 +87,11 @@ class Tool extends React.Component <Props, States> {
     }
 
     handleTextDblClick = (e: any, operation_name: string, operation: Operation) => {
-        const absPos = e.target.getAbsolutePosition();
+        const absPos = e.evt;
         this.setState({
             textEditVisible: true,
-            textX: absPos.x,
-            textY: absPos.y,
+            textX: absPos.clientX - document.documentElement.offsetLeft + document.body.scrollLeft   + document.documentElement.scrollLeft,
+            textY: absPos.clientY - document.documentElement.offsetTop+ document.body.scrollTop + document.documentElement.scrollTop,
             textValue: operation_name,
             op: operation
         });

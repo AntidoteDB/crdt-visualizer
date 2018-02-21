@@ -8,6 +8,7 @@ import Remove from './Remove';
 import Graph from './Graph';
 
 
+
 interface States {
     posX: number;
     posY: number;
@@ -96,11 +97,11 @@ class Replica extends React.Component<Props, States> {
     }
 
     addOp = (e: any) => {
-
+     console.log(e.target.getStage().getPointerPosition());
         var op = {
             replica: this,
-            x: e.evt.clientX,
-            y: e.evt.clientY,
+            x: e.target.getStage().getPointerPosition().x,
+            y:e.target.getStage().getPointerPosition().y,
             radius: 20,
             fill: '#3CB371',
             onOperationClick: this.props.onOperationClick,
@@ -142,7 +143,7 @@ class Replica extends React.Component<Props, States> {
     }
 
     onMouseEnter = (e: any) => {
-        this.setState({isMouseOver: true, MouseX: e.evt.clientX, MouseY: e.evt.clientY});
+        this.setState({isMouseOver: true, MouseX: e.target.getStage().getPointerPosition().x, MouseY: e.target.getStage().getPointerPosition().y});
     };
     onMouseLeave = () => {
         this.setState({isMouseOver: false});
