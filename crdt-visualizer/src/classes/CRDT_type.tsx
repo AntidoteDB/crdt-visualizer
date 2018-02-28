@@ -20,9 +20,7 @@ export class CRDT_type {
     display():string{return '';};
 
     getOp(op_time: number): operation|null   {return null;}
-    remove_op(op_time: number) {}
+    remove_op(op_time: number) {}   
     
-    at_source(lower_time: number, upper_time: number) :number {return 0;}
-    downstream(c: CRDT_type, lower_time: number, upper_time: number){}
     default_operation():string{return '';}
 }

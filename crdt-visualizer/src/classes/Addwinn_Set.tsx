@@ -66,10 +66,9 @@ export class Addwinn_Set extends CRDT_type {
 	display(): string {
 		let result : string = '{ ';
 		for (var i=0 ; i< this.state.length;i++ ){
-			result += '( ' + this.state[i].element + ' , ' +this.state[i].tag + ' ) ';
+			result += '( ' + this.state[i].element + ' )';
 		}
 		result+=' }';
-		console.log('resutr : +' + result);
 		return result;
 	}
 	

@@ -24,12 +24,10 @@ export class counter extends CRDT_type {
         this.state=0;
     }
     new_downstream(downstream_effect: counter_downstream):number{
-       // console.log('operation execute ' + this.state+ downstream_effect);
        var r : number;
-       r= this.state + downstream_effect;
-       //console.log('the inner valie ' + r);
+       r= this.state + downstream_effect;       
        this.state= r;
-        return r;
+       return r;
 
     }
     new_at_source(operation_name: string): counter_downstream {
