@@ -6,7 +6,8 @@ import {CRDT_type} from './CRDT_type';
 }
 export type  AddWinsSet_state = AddWinnsSetStateType[];
 
-export type  AddWinsSet_Downstream =  {op: "add", added: AddWinnsSetStateType}| {op: "remove", removed_element:string};
+
+export type  AddWinsSet_Downstream =  {op: "add", added: AddWinnsSetStateType}| {op: "remove", removed_elements:AddWinsSet_state};
 
 export class Addwinn_Set extends CRDT_type {
 
@@ -37,14 +38,17 @@ export class Addwinn_Set extends CRDT_type {
 			let newState: AddWinsSet_state = [];
 			for (let e1 of this.state) {
 				let removed = false;
-					if (e1.element === downstream_effect.removed_element) {
+				for (let e2 of downstream_effect.removed_elements) {
+					if ((e1.element === e2.element)&&(e1.tag==e2.tag)) {
 						removed = true;
 						break;
 					}
+				}
 				if (!removed) {
 					newState.push(e1);
 				}
 			}
+			
 			this.state= newState;
 		}
        
@@ -54,7 +58,13 @@ export class Addwinn_Set extends CRDT_type {
     new_at_source(operation_name: string, elem: string): AddWinsSet_Downstream {
 		
         if (operation_name == "remove") {
-			return {op: "remove", removed_element: elem};
+			let R: AddWinsSet_state = []
+			for (let e of this.state) {
+				if (e.element === elem) {
+					R.concat(e)
+				}
+			} 			
+			return {op: "remove", removed_elements: R};
 		} else {
 			this.last_tag++;
             let tag = this.last_tag;
