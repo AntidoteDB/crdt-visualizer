@@ -40,7 +40,7 @@ class Tool extends React.Component <Props, States> {
         return (
             <div>
                 <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
-                <input list={'browsers'}
+                <input list={this.props.crdt_Type_enum.toString()}
                     value={this.state.textValue}
                     style={{
                         display: this.state.textEditVisible ? 'block' : 'none',
@@ -58,10 +58,11 @@ class Tool extends React.Component <Props, States> {
                     onKeyDown={this.handleTextareaKeyDown}
 
                 />
-         <datalist id={'browsers'}>
-             {this.state.visualizer.getValidOperations().map((value:string)=>
-            <option value={value}></option>)}
-         </datalist>
+                <datalist id={this.props.crdt_Type_enum.toString()}>
+                    {this.state.visualizer.getValidOperations().map((value:string)=>
+                        <option value={value}></option>)}
+                </datalist>
+
                 <div>
 
                     <div style={{
@@ -95,8 +96,13 @@ class Tool extends React.Component <Props, States> {
             textValue: operation_name,
             op: operation
         });
+
     };
     handleTextEdit = (e: any) => {
+
+
+
+
         this.setState({
             textValue: e.target.value
         });
