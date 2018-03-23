@@ -107,9 +107,6 @@ export default class visualizer<State=any, Downstream=any> {
         } else {
             state = this.crdt.initialState();
         }
-        console.log("r = ", replica_id, "time = ", time_stamp)
-        console.log("vc = ", vc)
-        console.log("state = ", state)
         return this.crdt.value(state);
     }
 
@@ -267,8 +264,6 @@ export default class visualizer<State=any, Downstream=any> {
         while (true) {
             let eIndex = vc[r].get(r);
 
-            console.log("r = ", r, " eIndex = ", eIndex, "len = ", this.event_list[r].length);
-
             if (eIndex >= this.event_list[r].length) {
                 // no more events on this replica
                 active = active.filter(x => x != r);
@@ -280,8 +275,6 @@ export default class visualizer<State=any, Downstream=any> {
                 continue;
             }
             let e = this.event_list[r][eIndex];
-
-            console.log("event-list: ", this.event_list)
 
             if (e.type == "operation") {
                 e.preState = state[r];

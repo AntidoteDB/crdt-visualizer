@@ -2,7 +2,6 @@ import * as React from 'react';
 import Graph from './Graph';
 import Operation from './Operation';
 import visualizer from '../classes/visualizer';
-import {operation} from '../classes/operation';
 import {CRDT_type} from '../classes/CRDT_type';
 
 
@@ -137,8 +136,7 @@ class Tool extends React.Component <Props, States> {
                 ( this.state.visualizer.getOp(y, this.state.op.state.x)!.timestamp === this.state.op.state.x
                     && this.state.visualizer.getOp(y, this.state.op.state.x)!.operation.name != opName)
             ) {
-                let newOp = new operation(opName, this.state.op.state.x);
-                let err = this.state.visualizer.is_valid_operation(newOp.operation);
+                let err = this.state.visualizer.is_valid_operation(opName);
                 if (err == null) {
                     this.state.op.setState({fill: '#3CB371'});
                     this.setState({errorMessage: ''});
@@ -147,9 +145,8 @@ class Tool extends React.Component <Props, States> {
                         this.setState({ErrorVisible: false});
                     }, 3000);
                     this.state.op!.setState({operation: this.state.visualizer.default_Operation()});
-                    newOp.parse_parameter(newOp.operation);
                     this.setState({ErrorVisible: true});
-                    this.setState({errorMessage: newOp.operation});
+                    this.setState({errorMessage: opName});
                 }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
                 this.state.visualizer.add_operationStr(y, this.state.op.state.x, opName);
