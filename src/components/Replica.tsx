@@ -3,7 +3,6 @@ import {Arrow, Group, Rect, Text} from 'react-konva';
 import Operation from './Operation';
 import TooltipForState from './ToolTipForState';
 import visualizer from '../classes/visualizer';
-import {operation} from '../classes/operation';
 import Remove from './Remove';
 import Graph from './Graph';
 
@@ -127,8 +126,7 @@ class Replica extends React.Component<Props, States> {
                 break;
             }
         }
-        let newOp = new operation(op1.state.operation, op1.props.x);
-        this.props.visualizer.add_operation(y, newOp);
+        this.props.visualizer.add_operationStr(y, op1.props.x, op1.state.operation);
 
     };
 

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Group, Layer, Stage, Rect} from 'react-konva';
 import Replica from './Replica';
-import CrdtName from './CrdtName';
 import Operation from './Operation';
 import visualizer from '../classes/visualizer';
 import Update from './Update';
@@ -80,9 +79,6 @@ class Graph extends React.Component <Props, States> {
                     )}
 
 
-                </Layer>
-                <Layer>
-                    <CrdtName x={300} y={10} name={this.props.visualizer.get_DataType_Name()}/>
                 </Layer>
                 <Layer>
                     <Group>

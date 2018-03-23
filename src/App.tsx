@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Tool from "./components/Tool";
+import { CRDT_type } from './classes/CRDT_type';
 
 interface Props{
-    crdt_Type_enum:number;
+    crdt: CRDT_type;
 }
 
 class App extends React.Component  <Props, {}> {
@@ -11,7 +12,7 @@ class App extends React.Component  <Props, {}> {
     }
     render() {
         return (
-              <Tool crdt_Type_enum={this.props.crdt_Type_enum}/>
+              <Tool crdt={this.props.crdt}/>
 
             );
     }

@@ -3,6 +3,7 @@ import Graph from './Graph';
 import Operation from './Operation';
 import visualizer from '../classes/visualizer';
 import {operation} from '../classes/operation';
+import {CRDT_type} from '../classes/CRDT_type';
 
 
 interface States {
@@ -18,7 +19,7 @@ interface States {
 }
 
 interface Props {
-    crdt_Type_enum:number
+    crdt: CRDT_type
 }
 
 class Tool extends React.Component <Props, States> {
@@ -30,7 +31,7 @@ class Tool extends React.Component <Props, States> {
             textX: 0,
             textY: 0,
             textValue: '',
-            visualizer: new visualizer(this.props.crdt_Type_enum),
+            visualizer: new visualizer(this.props.crdt),
         };
 
     }
@@ -40,7 +41,7 @@ class Tool extends React.Component <Props, States> {
         return (
             <div>
                 <Graph onOperationClick={this.handleTextDblClick} visualizer={this.state.visualizer}/>
-                <input list={this.props.crdt_Type_enum.toString()}
+                <input list={this.props.crdt.toString()}
                     value={this.state.textValue}
                     style={{
                         display: this.state.textEditVisible ? 'block' : 'none',
@@ -58,7 +59,7 @@ class Tool extends React.Component <Props, States> {
                     onKeyDown={this.handleTextareaKeyDown}
 
                 />
-                <datalist id={this.props.crdt_Type_enum.toString()}>
+                <datalist id={this.props.crdt.toString()}>
                     {this.state.visualizer.getValidOperations().map((value:string)=>
                         <option value={value}></option>)}
                 </datalist>
@@ -133,11 +134,12 @@ class Tool extends React.Component <Props, States> {
             }
             let opName = this.state.op.state.operation;
             if (this.state.visualizer.getOp(y, this.state.op.state.x) === null ||
-                ( this.state.visualizer.getOp(y, this.state.op.state.x)!.time_stamp === this.state.op.state.x
-                    && this.state.visualizer.getOp(y, this.state.op.state.x)!.operation != opName)
+                ( this.state.visualizer.getOp(y, this.state.op.state.x)!.timestamp === this.state.op.state.x
+                    && this.state.visualizer.getOp(y, this.state.op.state.x)!.operation.name != opName)
             ) {
                 let newOp = new operation(opName, this.state.op.state.x);
-                if (newOp.is_valid_operation(newOp.operation, this.props.crdt_Type_enum)) {
+                let err = this.state.visualizer.is_valid_operation(newOp.operation);
+                if (err == null) {
                     this.state.op.setState({fill: '#3CB371'});
                     this.setState({errorMessage: ''});
                 } else {
@@ -150,7 +152,7 @@ class Tool extends React.Component <Props, States> {
                     this.setState({errorMessage: newOp.operation});
                 }
                 this.state.visualizer.remove_operation(y, this.state.op.state.x);
-                this.state.visualizer.add_operation(y, newOp);
+                this.state.visualizer.add_operationStr(y, this.state.op.state.x, opName);
             }
         }
     };

@@ -1,283 +1,347 @@
-import {replica} from './replica';
-import {operation} from './operation';
-import {merge} from './merge';
-import {counter} from './counter';
-import {Addwinn_Set} from './Addwinn_Set';
-import {CRDT_type} from './CRDT_type';
-import {CRDT_downstream} from './CRDT_type';
-//import {CRDT_state} from './CRDT_type';
-export default class visualizer {
+import { CRDT_type, Operation } from './CRDT_type';
+import {parseOperation} from './parser';
 
-//---------- Properties---------------------
-    public variable_list: CRDT_type [] = [];
-    public replica_list: replica [] = [];
-    public merge_list: merge [] = [];
-    public operation_list: operation [][] ;    
-    CRDT_TYPE_ENUMERATION : number;
+class Vectorclock {
+    private v: number[] = [];
 
-//----------Metods--------------------------
-    constructor(CRDT_TYPE_ENUMERATION: number) {
-        //???????? should we read the replica_num and var_num here from the json file or pass them as input for the constrictor???????????????ß
-        var replica_num: number = 3;
-        //initializing replicas and variables
-        this.CRDT_TYPE_ENUMERATION = CRDT_TYPE_ENUMERATION;
-       //initializing replicas and variables
-        switch (this.CRDT_TYPE_ENUMERATION) {
-    	            case 1: //counter
-                    for (var i = 0; i < replica_num; i++) {
-                        this.add_replica(i);
-                        this.variable_list.push(new counter());
-                    }
-                    case 2://set
-                    for (var i = 0; i < replica_num; i++) {
-                            this.add_replica(i);
-                            this.variable_list.push(new Addwinn_Set());
-                    }
-    	
-        	
+    constructor(size: number) {
+        for (let i=0 ; i<size; i++) {
+            this.v.push(0);
         }
+    }
 
-        //initializing operation list
-        this.operation_list = [];
-        for (var i = 0; i < replica_num; i++) {
-            this.operation_list[i] = [];
+    get(r: number): number {
+        return this.v[r];
+    }
+
+    with(r: number, n: number) {
+        let res = new Vectorclock(this.v.length);
+        for (let i=0 ; i<this.v.length; i++) {
+            res.v[i] = this.v[i];
         }
-
-        
-
+        res.v[r] = n;
+        return res;
     }
 
-//------------------------------------------
-    add_replica(id: number) {
-        this.replica_list.push(new replica(id));
-    }
-
-
-//-------------------------------------------
-    add_operation(replica_id: number, op: operation) {
-       if (op.is_valid_operation(op.operation,this.CRDT_TYPE_ENUMERATION)){
-            op.is_executed= false;
-            this.operation_list[replica_id].push(op);
-       }
-        
-    }
-
-//-------------------------------------------
-    move_operation(replica_id: number, op_Current_time: number, op_New_time: number) {
-        let op = this.getOp(replica_id,op_Current_time)
-        if (op != null) {
-            //let opName = this.variable_list[replica_id].getOp(op_Current_time)!.operation;
-            this.remove_operation(replica_id, op_Current_time);
-            op.time_stamp = op_New_time;
-            this.add_operation(replica_id, op);
-        }
-
-    }
-
-    //-----------------------------------------
-    getOp(replica_id:number,op_time: number) : operation|null {
-        var index: number = -1;
-        for (var i = 0; i < this.operation_list[replica_id].length; i++) {
-            if (op_time == this.operation_list[replica_id][i].time_stamp) {
-                index = i;
-                return this.operation_list[replica_id][index];
+    leq(v: Vectorclock): boolean {
+        for (let i=0; i<this.v.length; i++) {
+            if (this.v[i] > v.get(i)) {
+                return false;
             }
         }
-        console.log('get op : '+ index);
+        return true;
+    }
+
+    merge(v: Vectorclock): Vectorclock {
+        let res = new Vectorclock(this.v.length);
+        for (let i=0; i<this.v.length; i++) {
+            res.v[i] = Math.max(this.get(i), v.get(i))
+        }
+        return res;
+    }
+
+    toString() {
+        return "VC" + this.v.toString();
+    }
+
+}
+
+interface operation_event<State=any, Downstream=any> {
+    type: 'operation';
+    vc?: Vectorclock;
+    timestamp: number;
+    preState?: State;
+    postState?: State;
+    downstream?: Downstream;
+    operation: Operation;
+
+}
+
+interface merge_event<State=any> {
+    type: 'merge';
+    vc?: Vectorclock;
+    timestamp: number;
+    from_replica: number;
+    from_time_stamp: number;
+    preState?: State;
+    postState?: State;
+}
+
+type event<State=any, Downstream=any> = merge_event<State> | operation_event<State, Downstream>;
+
+//import {CRDT_state} from './CRDT_type';
+export default class visualizer<State=any, Downstream=any> {
+
+
+    //---------- Properties---------------------
+    crdt: CRDT_type<State, Downstream>;
+    // variable_list: State[] = [];
+    // replica_list: replica[] = [];
+    numberOfReplicas: number;
+    event_list: event<State, Downstream>[][];
+    resultsCalculated: boolean = false;
+
+    //----------Metods--------------------------
+    constructor(crdt: CRDT_type<State, Downstream>, numberOfReplicas: number = 3) {
+        this.crdt = crdt;
+        // //initializing replicas and variables
+        // for (var i = 0; i < numberOfReplicas; i++) {
+        //     this.add_replica(i);
+        //     this.variable_list.push(crdt.initialState());
+        // }
+
+        //initializing operation list
+        this.numberOfReplicas = numberOfReplicas;
+        this.event_list = [];
+        for (let i = 0; i < numberOfReplicas; i++) {
+            this.event_list[i] = [];
+        }
+    }
+
+    public new_value(replica_id: number, time_stamp: number): string {
+        this.runSimulation(); // TODO cache result
+        let vc = this.getVectorclock(replica_id, time_stamp);
+        let state: State;
+        if (vc.get(replica_id) > 0) {
+            state = this.event_list[replica_id][vc.get(replica_id) - 1].postState!;
+        } else {
+            state = this.crdt.initialState();
+        }
+        console.log("r = ", replica_id, "time = ", time_stamp)
+        console.log("vc = ", vc)
+        console.log("state = ", state)
+        return this.crdt.value(state);
+    }
+
+    public default_Operation(): string {
+        return this.crdt.defaultOperation()
+    }
+
+    public remove_operation(replica_id: number, op_time: number) {
+        this.resultsCalculated = false;
+        this.event_list[replica_id] = this.event_list[replica_id].filter(o => !(o.type == "operation" &&  o.timestamp == op_time))
+    }
+
+    public move_operation(replica_id: number, op_Current_time: number, op_New_time: number) {
+        this.resultsCalculated = false;
+        for (let op of this.event_list[replica_id]) {
+            if (op.type == "operation" && op.timestamp === op_Current_time) {
+                op.timestamp = op_New_time;
+            }
+        }
+    }
+
+    public add_operationStr(replica_id: number, timestamp: number, opStr: string) {
+        let op: Operation
+        try {
+            op = parseOperation(opStr)
+        } catch (e) {
+            // ignore parse error
+            return
+        }
+        this.add_operation(replica_id, timestamp, op);
+    }
+
+    public add_operation(replica_id: number, timestamp: number, op: Operation) {
+        if (this.crdt.checkOperation(op) !== null) {
+            // invalid operation: ignore
+            return;
+        }
+
+        this.insertEvent(replica_id, {
+            type: "operation",
+            timestamp: timestamp,
+            operation: op
+        });
+    }
+
+    private insertEvent(replica_id: number, event: event) {
+        this.resultsCalculated = false;
+        let toInsert = event;
+        for (let i=0; i<this.event_list[replica_id].length; i++) {
+            let current =this.event_list[replica_id][i];
+            if (toInsert.timestamp < current.timestamp) {
+                this.event_list[replica_id][i] = toInsert;
+                toInsert = current;
+            }
+        }
+        this.event_list[replica_id].push(toInsert);
+
+    }
+
+
+    public getValidOperations(): string[] {
+        return this.crdt.operationSuggestions();
+    }
+
+    public getOp(replica_id: number, op_time: number): operation_event | null {
+        for (let op of this.event_list[replica_id]) {
+            if (op.type == "operation" && op.timestamp === op_time) {
+                return op;
+            }
+        }
         return null;
     }
 
+    public is_valid_operation(op: string): string|null {
+        try {
+            return this.crdt.checkOperation(parseOperation(op))
+        } catch (e) {
+            return e.toString()
+        }
+    }
+
+    public add_merge(from_replica: number, from_time: number, to_replica: number, to_time: number) {
+        this.insertEvent(to_replica, {
+            type: "merge",
+            timestamp: to_time,
+            from_replica: from_replica,
+            from_time_stamp: from_time
+        })
+    }
+
+    public remove_merge(from_replica: number, from_time: number, to_replica: number, to_time: number) {
+        this.resultsCalculated = false;
+        this.event_list[to_replica] = this.event_list[to_replica].filter(m => {
+            if (m.type == "merge") {
+                return m.from_replica != from_replica
+                    || m.from_time_stamp != from_time
+                    || m.timestamp != to_time;
+            }
+            return true;
+        });
+    }
+
+    private newVc(): Vectorclock {
+        return new Vectorclock(this.event_list.length);
+    }
 
 
-//-------------------------------------------
-    
-    remove_operation(replica_id: number,op_time: number) {
-        var index: number = -1;
-        
-        for (var i = 0; i < this.operation_list[replica_id].length; i++) {
-            if (op_time == this.operation_list[replica_id][i].time_stamp) {
-                index = i;
+    /**
+     * Recursively calculates the vector clock for a given replica and time
+     */
+    private getVectorclock(replica: number, time: number): Vectorclock {
+        let vc = new Vectorclock(this.event_list.length);
+
+        for (let i=0; i< this.event_list[replica].length; i++) {
+            let e = this.event_list[replica][i];
+            if (e.timestamp > time) {
+                return vc;
+            }
+            if (e.type == "merge") {
+                vc = vc.with(replica, i+1).merge(this.getVectorclock(e.from_replica, e.from_time_stamp));
+            } else {
+                vc = vc.with(replica, i+1);
             }
         }
-        if (index != -1) {
-            this.operation_list[replica_id].splice(index, 1);
-        }
+        return vc;
     }
 
-//-------------------------------------------
-    add_merge(from_replica: number, from_time: number, to_replica: number, to_time: number) {
-        // add the new merge to the list
-        var u: merge;
-        u = new merge(this.merge_list.length + 1, from_replica, from_time, to_replica, to_time);
-        this.merge_list.push(u);
-    }
-
-//----------------------------------------------------
-    remove_merge_by_id(u_id: number) {
-        var index: number = 0;
-        for (var i = 0; i < this.merge_list.length; i++) {
-            if (u_id == this.merge_list[i].merge_id) {
-                index = i;
+    /**
+     * Calculate vector clocks for all events
+     */
+    private calculateVectorClocks() {
+        for (let r=0; r<this.numberOfReplicas; r++) {
+            for (let e of this.event_list[r]) {
+                e.vc = this.getVectorclock(r, e.timestamp);
             }
         }
-        this.merge_list.splice(index, 1);
     }
 
-//---------------------------------------------------
-    remove_merge(from_replica: number, from_time: number, to_replica: number, to_time: number) {
-        var index: number = -1;
-        for (var i = 0; i < this.merge_list.length; i++) {
-            if ((this.merge_list[i].from_replica == from_replica) && (this.merge_list[i].to_replica == to_replica) && (this.merge_list[i].to_time_stamp == to_time) && (this.merge_list[i].from_time_stamp == from_time)) {
-                index = i;
-            }
+    /**
+     * Simulate an execution of the given scenario
+     * Stores results in the event-objects
+     */
+    private runSimulation() {
+        if (this.resultsCalculated) {
+            return;
         }
-        this.merge_list.splice(index, 1);
+        this.calculateVectorClocks();
+
+        let r = 0;
+        let vc = this.event_list.map(x => this.newVc())
+        let vc_wall = this.event_list.map(x => this.newVc())
+        let state = vc.map(x => this.crdt.initialState())
+        let active = vc.map((x,i) => i)
+
+        while (true) {
+            let eIndex = vc[r].get(r);
+
+            console.log("r = ", r, " eIndex = ", eIndex, "len = ", this.event_list[r].length);
+
+            if (eIndex >= this.event_list[r].length) {
+                // no more events on this replica
+                active = active.filter(x => x != r);
+                vc_wall[r] = vc_wall[r].with(r, Number.POSITIVE_INFINITY);
+                if (active.length == 0) {
+                    break;
+                }
+                r = active[0];
+                continue;
+            }
+            let e = this.event_list[r][eIndex];
+
+            console.log("event-list: ", this.event_list)
+
+            if (e.type == "operation") {
+                e.preState = state[r];
+                let uid = r + "." + vc[r].get(r);
+                e.downstream = this.crdt.downstream(e.operation, uid, e.preState)
+                e.postState = this.crdt.update(e.downstream, e.preState);
+                state[r] = e.postState;
+                vc[r] = vc[r].with(r, vc[r].get(r) + 1);
+                vc_wall[r] = vc_wall[r].with(r, e.timestamp);
+            } else if (e.type == "merge") {
+                if (vc_wall[e.from_replica].get(e.from_replica) < e.from_time_stamp) {
+                    // from-replica has not completed yet
+                    // continue there
+                    vc_wall[r] = vc_wall[r].with(r, e.timestamp - 1);
+                    r = e.from_replica;
+                    continue;
+                }
+                // execute all downstream operations, which are not yet executed
+                e.preState = state[r];
+                let fromVc = this.getVectorclock(e.from_replica, e.from_time_stamp);
+                e.postState = this.executeDownstreams(e.preState, vc[r], fromVc);
+                state[r] = e.postState;
+                vc[r] = vc[r].with(r, vc[r].get(r) + 1).merge(fromVc);
+                vc_wall[r] = vc_wall[r].with(r, e.timestamp);
+            }
+
+        }
+        this.resultsCalculated = true;
     }
 
-
-
-
-    //  operation_sort sorts the operations before performing downstream function, so that the operation are executed with respect of their timestamp    
-    operation_sort(replica_id: number) {
-        var temp_op: operation;
-        for (var i = 0; i < this.operation_list[replica_id].length; i++) {
-            for (var j = i + 1; j < this.operation_list[replica_id].length; j++) {
-                if (this.operation_list[replica_id][i].time_stamp > this.operation_list[replica_id][j].time_stamp) {
-                    temp_op = this.operation_list[replica_id][i];
-                    this.operation_list[replica_id][i] = this.operation_list[replica_id][j];
-                    this.operation_list[replica_id][j] = temp_op;
+    /**
+     * Executes all downstream operations, which are included in "toAdd" and not included in "done"
+     */
+    private executeDownstreams(state: State, done: Vectorclock, toAdd: Vectorclock): State {
+        let ops: operation_event[] = []
+        for (let es of this.event_list) {
+            for (let e of es) {
+                if (e.type == "operation" && e.vc!.leq(toAdd) && !e.vc!.leq(done)) {
+                    ops.push(e);
                 }
             }
         }
-    }
-
-
-
-    new_value(replica_id: number, time_stamp: number): string{
-        var ds: CRDT_downstream[]=[];
-        // initializing variables state
-        for (var i = 0; i < this.variable_list.length; i++) {
-            this.variable_list[i].init();
-        }
-        for (var i = 0; i < this.operation_list.length; i++) {
-            for (var j = 0; j< this.operation_list[i].length; j++) {
-                this.operation_list[i][j].is_executed=false;
-            }
-        
-        }
-        
-        ds = this.get_downstream_effect(replica_id,time_stamp);
-        
-        
-        for(var i = 0; i < ds.length; i++){
-            this.variable_list[replica_id].new_downstream(ds[i]);
-            }            
-        
-        return this.variable_list[replica_id].display();
-
-    }
-
-    //----------------------------------------
-    get_downstream_effect(replica_id: number, time_stamp: number): CRDT_downstream []{
-        var temp_merge_list: merge [] = [];
-        var ds: CRDT_downstream[]=[];    
-
-        
-
-        // temp merge list conatins all the merge operations comming to the desired replica
-        for (var k = 0; k < this.merge_list.length; k++) {// merge list loop
-            if ((this.merge_list[k].to_time_stamp <= time_stamp) && (this.merge_list[k].to_replica == replica_id)) {
-                temp_merge_list.push(this.merge_list[k]);
-                
-            }//if
-        }//
-        
-        // we sort the comming merges to the desired replica so we can execute them in the right order
-        temp_merge_list = this.sort_merge_list(temp_merge_list);
-        this.operation_sort(replica_id);
-        if (temp_merge_list.length == 0) {
-            
-            for (var i=0; i< this.operation_list[replica_id].length;i++){               
-                if (( this.operation_list[replica_id][i].time_stamp <= time_stamp)&&(! this.operation_list[replica_id][i].is_executed)){
-                    ds.push( this.variable_list[replica_id].new_at_source(this.operation_list[replica_id][i].operation,this.operation_list[replica_id][i].parameter));
-                    this.operation_list[replica_id][i].is_executed= true;
-                    
-                }
-            }	          
-            return ds;
-        } else {
-            
-                var n: number=temp_merge_list.length;
-                //the down stream effect is the same as the down stream effects before the last merge + the merge effect
-
-                // recursive call: the downstream effect  before the last merge
-                ds = this.get_downstream_effect(replica_id,temp_merge_list[n-1].to_time_stamp-1);      
-                
-                //recursive call: the down stream effect of the last merg operation              
-                var dds: CRDT_downstream[]  = this.get_downstream_effect(temp_merge_list[n-1].from_replica,temp_merge_list[n-1].from_time_stamp);
-            
-                for (var j=0; j< dds.length;j++){
-                    ds.push( dds[j]);
-                }	
-                
-                
-                // the operations left between the last merg operations and the requierd time
-                for (var j=0; j< this.operation_list[replica_id].length;j++){
-                    if ( (this.operation_list[replica_id][j].time_stamp > temp_merge_list[n-1].to_time_stamp) && (this.operation_list[replica_id][j].time_stamp<=time_stamp)&&(! this.operation_list[replica_id][j].is_executed)){
-                       this.operation_list[replica_id][j].is_executed=true;
-                        ds.push( this.variable_list[replica_id].new_at_source(this.operation_list[replica_id][j].operation,this.operation_list[replica_id][j].parameter));
-                    }
-                }	
-    	    
-        }	                
-
-        return ds;
-
-    }
-
-    sort_merge_list(list: merge[]): merge[] {
-        var temp: merge;
-        for (var i = 0; i < list.length; i++) {
-            for (var j = i + 1; j < list.length; j++) {
-                if (list[i].to_time_stamp > list[j].to_time_stamp) {
-                    temp = list[i];
-                    list[i] = list[j];
-                    list[j] = temp;
+        while (ops.length > 0) {
+            // find minimal event:
+            let min = ops[0];
+            let minPos = 0;
+            for (let i = 1; i<ops.length; i++) {
+                if (ops[i].vc!.leq(min.vc!)) {
+                    min = ops[i];
+                    minPos = i;
                 }
             }
+            // execute event and remove it from list of pos:
+            ops.splice(minPos, 1);
+            state = this.crdt.update(min.downstream!, state);
         }
-        return (list);
+        return state;
     }
 
 
-
-
-    default_Operation(): string {
-        switch (this.CRDT_TYPE_ENUMERATION){
-            case 1 :
-            return "increment";
-            case 2 : 
-            return "add ( 1 ) ";
-            default : return "";
-        }
-        }
-    get_DataType_Name(): string {
-        switch (this.CRDT_TYPE_ENUMERATION){
-            case 1 :
-                return "counter";
-            case 2 :
-                return "Addwinn_Set ";
-            default : return "";
-        }
-    }
-
-    getValidOperations():[string]{
-        switch (this.CRDT_TYPE_ENUMERATION){
-            case 1 :{ return ["increment","decrement"];}
-            case 2 :{ return ["add(any)","remove(any)"];}
-            default : return [""];
-        }
-    }
 
 }
 
