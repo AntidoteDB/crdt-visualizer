@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {Circle, Group, Text} from 'react-konva';
+import {Circle, Group} from 'react-konva';
 import Tooltip from "./Tooltip";
 import Replica from "./Replica";
 import visualizer from "../classes/visualizer";
 
 
 interface States {
-    isMouseOver: boolean;
     operation: string;
     radius: number;
     fill: string;
@@ -32,7 +31,7 @@ class Operation extends React.Component<Props, States> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isMouseOver: false, operation: this.props.visualizer!.default_Operation(),
+            operation: this.props.visualizer!.default_Operation(),
             replica: this.props.replica,
             radius: this.props.radius, fill: this.props.fill,
             x: this.props.x,
@@ -50,33 +49,23 @@ class Operation extends React.Component<Props, States> {
                    onDragStart={(e) => this.onDragStart()}
                    onDragEnd={() => this.onDragEnd()}
             >
-                <Group onMouseEnter={this.onMouseEnter}
-                       onMouseLeave={this.onMouseLeave}>
+                
                     <Circle x={this.state.x} y={this.props.y}
                             radius={this.props.radius}
                             fill={this.state.fill}
-                            strokeWidth={this.state.isMouseOver ? 5 : 1}
+                            strokeWidth={1}
                             stroke={'black'}
                             shadowBlur={5}
                     />
-                    <Text text={this.state.operation} fill={'black'}
-                          x={this.state.x - this.props.radius + 4} y={this.props.y}
-                          fontSize={8} fontFamily={'Calibri'}
-                          padding={-3} align={'center'} height={30} width={30}/>
 
-                </Group>
+               
                 <Tooltip x={this.state.x - this.props.radius - 40}
-                         y={this.props.y - this.props.radius - 40} text={this.state.operation}
-                         visible={this.state.isMouseOver ? true : false}/>
+
+                         y={this.props.y - this.props.radius - 40} text={this.state.operation}/>
             </Group>);
     }
 
-    onMouseEnter = () => {
-        this.setState({isMouseOver: true})
-    }
-    onMouseLeave = () => {
-        this.setState({isMouseOver: false})
-    }
+  
     onClickHandel = (e: any, op: string, operation: Operation) => {
         this.props.onOperationClick(e, op, operation);
     }

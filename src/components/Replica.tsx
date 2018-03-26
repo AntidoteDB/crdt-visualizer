@@ -62,7 +62,7 @@ class Replica extends React.Component<Props, States> {
                 onMouseUp={this.props.onMouseUp}
             />
             <Rect x={this.props.points[0] - 30} y={this.props.points[1] - 15}
-                  height={30} width={30} fill={'Tomato'} stroke={'black'}
+                  height={30} width={30} fill={'white'} stroke={'white'}
             />
 
             <Text text={this.props.name} fill={'black'}
@@ -101,7 +101,7 @@ class Replica extends React.Component<Props, States> {
             replica: this,
             x: e.target.getStage().getPointerPosition().x,
             y:e.target.getStage().getPointerPosition().y,
-            radius: 20,
+            radius: 10,
             fill: '#3CB371',
             onOperationClick: this.props.onOperationClick,
             visualizer: this.props.visualizer
