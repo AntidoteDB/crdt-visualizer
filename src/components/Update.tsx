@@ -37,7 +37,7 @@ class Update extends React.Component <Props, State> {
         return (
             <Group>
                 <Arrow points={[this.props.fromX, this.props.fromY, this.props.toX, this.props.toY]}
-                       stroke={'red'} strokeWidth={3} lineJoin={'round'}
+                       stroke={'Grey'} strokeWidth={3} lineJoin={'round'}
                        draggable={true}
                        onDragStart={() => this.handleDragStart()}
                        onDragEnd={(e) => this.handleDragEnd(e)}
