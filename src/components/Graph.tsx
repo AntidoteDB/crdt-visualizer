@@ -140,12 +140,14 @@ class Graph extends React.Component <Props, States> {
     }
 
     onMouseDown = (e: any) => {
+        this.setfromReplica(e);
         if (this.state.fromReplica === 'no replica') {
+             this.setState({isDrawing: false});
             return;
         }
         this.setState({
             isDrawing: true, fromX:e.target.getStage().getPointerPosition().x,
-            fromY:e.target.getStage().getPointerPosition().y, toX: e.target.getStage().getPointerPosition().x,
+          toX: e.target.getStage().getPointerPosition().x,
             toY: e.target.getStage().getPointerPosition().y
         });
 
@@ -184,20 +186,40 @@ class Graph extends React.Component <Props, States> {
     };
 
     setToReplica(e: any) {
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 100) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 0});
+        if (e.target.getStage().getPointerPosition().x < 100) {return;}
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 100) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({toReplica: 0, toY:100});
         }
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 200) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 1});
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 200) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({toReplica: 1,toY:200});
         }
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 300) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 2});
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 300) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({toReplica: 2,toY:300});
         }
         setTimeout(() => {
             this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
         }, 1000);
 
     }
+
+
+setfromReplica(e: any) {
+        if (e.target.getStage().getPointerPosition().x < 100) {return;}
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 100) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({fromReplica: 0, fromY:100});
+        }
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 200) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({fromReplica: 1,fromY:200});
+        }
+        if (Math.abs(e.target.getStage().getPointerPosition().y - 300) < 25 && e.target.getStage().getPointerPosition().x < 700) {
+            this.setState({fromReplica: 2,fromY:300});
+        }
+        setTimeout(() => {
+            this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
+        }, 2000);
+
+    }
+
 }
 
 export default Graph;
