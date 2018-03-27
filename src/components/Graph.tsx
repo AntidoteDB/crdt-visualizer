@@ -31,11 +31,9 @@ class Graph extends React.Component <Props, States> {
     r1_Points = [100, 100, 700, 100];
     r2_Points = [100, 200, 700, 200];
     r3_Points = [100, 300, 700, 300];
-    replicas = [this.r1_Points,this.r2_Points,this.r3_Points]
-
-    componentWillMount(){
-        console.log("ok")
-    }
+    replicas_y_positions = [100,200,300]
+    replica_start_point_x = 100;
+    replica_End_point_x = 700;
 
     constructor(props: Props) {
         super(props);
@@ -188,11 +186,11 @@ class Graph extends React.Component <Props, States> {
     setToReplica(e: any) {
         var variance=25;
 
-        if (e.target.getStage().getPointerPosition().x < this.r1_Points[0]) {return;}
-        for (var i=0;i<this.replicas.length;i++) {
-        if (Math.abs(e.target.getStage().getPointerPosition().y - (this.replicas[i])[1] ) < variance 
-            && e.target.getStage().getPointerPosition().x < (this.replicas[i])[2]) {
-            this.setState({toReplica:i, toY: (this.replicas[i])[1]});
+        if (e.target.getStage().getPointerPosition().x < this.replica_start_point_x) {return;}
+        for (var i=0;i<this.replicas_y_positions.length;i++) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - this.replicas_y_positions[i]) < variance 
+            && e.target.getStage().getPointerPosition().x < this.replica_End_point_x) {
+            this.setState({toReplica:i, toY: this.replicas_y_positions[i]});
         }}
       }
 
@@ -200,12 +198,12 @@ class Graph extends React.Component <Props, States> {
     setfromReplica(e: any) {
         var variance=25;
 
-        if (e.target.getStage().getPointerPosition().x < this.r1_Points[0]) {return;}
+        if (e.target.getStage().getPointerPosition().x < this.replica_start_point_x) {return;}
 
-        for (var i=0;i<this.replicas.length;i++) {
-        if (Math.abs(e.target.getStage().getPointerPosition().y - (this.replicas[i])[1]) < variance 
-            && e.target.getStage().getPointerPosition().x <  (this.replicas[i])[2]) {
-            this.setState({fromReplica: i, toReplica:'no replica' ,fromY: (this.replicas[i])[1]});
+        for (var i=0;i<this.replicas_y_positions.length;i++) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - (this.replicas_y_positions[i])) < variance 
+            && e.target.getStage().getPointerPosition().x <  this.replica_End_point_x) {
+            this.setState({fromReplica: i, toReplica:'no replica' ,fromY: (this.replicas_y_positions[i])});
         }
       
       }}
