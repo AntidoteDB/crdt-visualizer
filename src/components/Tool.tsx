@@ -60,7 +60,7 @@ class Tool extends React.Component <Props, States> {
                 />
                 <datalist id={this.props.crdt.toString()}>
                     {this.state.visualizer.getValidOperations().map((value:string)=>
-                        <option value={value}></option>)}
+                        <option value={value} ></option>)}
                 </datalist>
 
                 <div>

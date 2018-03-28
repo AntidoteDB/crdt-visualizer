@@ -28,6 +28,12 @@ interface Props {
 }
 
 class Graph extends React.Component <Props, States> {
+    r1_Points = [100, 100, 700, 100];
+    r2_Points = [100, 200, 700, 200];
+    r3_Points = [100, 300, 700, 300];
+    replicas_y_positions = [100,200,300]
+    replica_start_point_x = 100;
+    replica_End_point_x = 700;
 
     constructor(props: Props) {
         super(props);
@@ -82,7 +88,7 @@ class Graph extends React.Component <Props, States> {
                 </Layer>
                 <Layer>
                     <Group>
-                        <Replica points={[100, 100, 700, 100]} name={'R1'}
+                        <Replica points={this.r1_Points} name={'R1'}
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
@@ -90,11 +96,8 @@ class Graph extends React.Component <Props, States> {
                                  }}
                                  onMouseUp={() => {
                                      this.setState({toReplica: 0});
-                                     setTimeout(() => {
-                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
-                                     }, 1000);
                                  }} graph={this}/>
-                        <Replica points={[100, 200, 700, 200]} name={'R2'}
+                        <Replica points={this.r2_Points} name={'R2'}
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
@@ -102,11 +105,8 @@ class Graph extends React.Component <Props, States> {
                                  }}
                                  onMouseUp={() => {
                                      this.setState({toReplica: 1});
-                                     setTimeout(() => {
-                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
-                                     }, 1000);
                                  }} graph={this}/>
-                        <Replica points={[100, 300, 700, 300]} name={'R3'}
+                        <Replica points={this.r3_Points} name={'R3'}
                                  onOperationClick={this.props.onOperationClick}
                                  visualizer={this.props.visualizer}
                                  onMouseDown={() => {
@@ -115,9 +115,7 @@ class Graph extends React.Component <Props, States> {
                                  onMouseUp={() => {
                                      this.setState({toReplica: 2})
                                      ;
-                                     setTimeout(() => {
-                                         this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
-                                     }, 1000);
+
                                  }} graph={this}/>
                     </Group>
 
@@ -140,12 +138,14 @@ class Graph extends React.Component <Props, States> {
     }
 
     onMouseDown = (e: any) => {
+        this.setfromReplica(e);
         if (this.state.fromReplica === 'no replica') {
+             this.setState({isDrawing: false});
             return;
         }
         this.setState({
             isDrawing: true, fromX:e.target.getStage().getPointerPosition().x,
-            fromY:e.target.getStage().getPointerPosition().y, toX: e.target.getStage().getPointerPosition().x,
+          toX: e.target.getStage().getPointerPosition().x,
             toY: e.target.getStage().getPointerPosition().y
         });
 
@@ -184,20 +184,30 @@ class Graph extends React.Component <Props, States> {
     };
 
     setToReplica(e: any) {
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 100) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 0});
-        }
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 200) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 1});
-        }
-        if (Math.abs(e.target.getStage().getPointerPosition().y - 300) < 10 && e.target.getStage().getPointerPosition().x < 700) {
-            this.setState({toReplica: 2});
-        }
-        setTimeout(() => {
-            this.setState({fromReplica: 'no replica', toReplica: 'no replica'});
-        }, 1000);
+        var variance=25;
 
-    }
+        if (e.target.getStage().getPointerPosition().x < this.replica_start_point_x) {return;}
+        for (var i=0;i<this.replicas_y_positions.length;i++) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - this.replicas_y_positions[i]) < variance 
+            && e.target.getStage().getPointerPosition().x < this.replica_End_point_x) {
+            this.setState({toReplica:i, toY: this.replicas_y_positions[i]});
+        }}
+      }
+
+
+    setfromReplica(e: any) {
+        var variance=25;
+
+        if (e.target.getStage().getPointerPosition().x < this.replica_start_point_x) {return;}
+
+        for (var i=0;i<this.replicas_y_positions.length;i++) {
+        if (Math.abs(e.target.getStage().getPointerPosition().y - (this.replicas_y_positions[i])) < variance 
+            && e.target.getStage().getPointerPosition().x <  this.replica_End_point_x) {
+            this.setState({fromReplica: i, toReplica:'no replica' ,fromY: (this.replicas_y_positions[i])});
+        }
+      
+      }}
+
 }
 
 export default Graph;
