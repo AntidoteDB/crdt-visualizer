@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Arrow, Group, Rect, Text} from 'react-konva';
 import Operation from './Operation';
-import TooltipForState from './ToolTipForState';
 import visualizer from '../classes/visualizer';
 import Remove from './Remove';
 import Graph from './Graph';
@@ -16,8 +15,6 @@ interface States {
     show: boolean;
     operations: Operation[];
     isMouseOver: boolean;
-    MouseX: number;
-    MouseY: number;
     RemVisible: boolean
 }
 
@@ -42,8 +39,6 @@ class Replica extends React.Component<Props, States> {
             show: false,
             operations: [],
             isMouseOver: false,
-            MouseX: 0,
-            MouseY: 0,
             RemVisible: false
         };
     }
@@ -56,8 +51,6 @@ class Replica extends React.Component<Props, States> {
                 fill={'black'} stroke={'black'} strokeWidth={4}
                 pointerLength={10} pointerWidth={10}
                 points={this.props.points} onClick={(e) => this.addOp(e)}
-                onMouseOver={this.onMouseEnter}
-                onMouseLeave={this.onMouseLeave}
                 onMouseDown={this.props.onMouseDown}
                 onMouseUp={this.props.onMouseUp}
             />
@@ -82,13 +75,6 @@ class Replica extends React.Component<Props, States> {
                         key={operation.props.x} onOperationClick={this.props.onOperationClick}
                         visualizer={this.props.visualizer}
                     />) : null}
-            <TooltipForState
-                x={this.state.MouseX}
-                y={this.state.MouseY}
-                text={'Timestamp:' + (this.state.MouseX - this.props.points[0]).toString()}
-                state={'State:' + this.props.visualizer!.new_value(this.getReplicaId(), this.state.MouseX)}
-                visible={this.state.isMouseOver ? true : false}
-            />
 
         </Group>;
 
@@ -139,13 +125,6 @@ class Replica extends React.Component<Props, States> {
 
         this.setState({operations: newState});
     }
-
-    onMouseEnter = (e: any) => {
-        this.setState({isMouseOver: true, MouseX: e.target.getStage().getPointerPosition().x, MouseY: e.target.getStage().getPointerPosition().y});
-    };
-    onMouseLeave = () => {
-        this.setState({isMouseOver: false});
-    };
 
     getReplicaId() {
         var x = this.props.name;
