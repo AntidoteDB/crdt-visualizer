@@ -7,10 +7,10 @@
     "@syncfusion/ej2-react-dropdowns": "^15.4.27",
     "input-autocomplete": "^1.0.7",
     "konva": "^1.7.6",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-infinite-autocomplete": "^2.0.3",
-    "react-konva": "^1.6.4",
+    "react-konva": "^1.7.2",
     "react-scripts-ts": "2.8.0"
   },
   "scripts": {
@@ -20,10 +20,10 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
-    "@types/jest": "^21.1.8",
-    "@types/node": "^8.5.0",
-    "@types/react": "^16.0.29",
-    "@types/react-dom": "^16.0.3",
-    "jest": "^21.2.1"
+    "@types/jest": "^21.1.10",
+    "@types/node": "^8.10.10",
+    "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.5",
+    "jest": "^22.4.3"
   }
 }
