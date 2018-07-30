@@ -17,7 +17,7 @@ body {
   margin-top: 50px;
   margin-left: 150px;
 }
-#gMaps{
+.gMaps{
   border: solid 2px black;
   width: 1000px;
   height: 400px;
