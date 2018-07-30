@@ -2,13 +2,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
-import {Set_aw} from './classes/crdts/set_aw'
-import {Counter} from "./classes/crdts/counter";
-import {Integer} from "./classes/crdts/integer";
+import { Set_aw } from './classes/crdts/set_aw'
+import { Counter } from "./classes/crdts/counter";
+import { Integer } from "./classes/crdts/integer";
 
 
 ReactDOM.render(
-    <App crdt={new Counter()}  />,
+    <App crdt={new Counter()} />,
     document.getElementById('counter') as HTMLElement,
 
 );
@@ -21,6 +21,6 @@ ReactDOM.render(
 
 ReactDOM.render(
     <App crdt={new Integer()} />,
-    document.getElementById('gMaps') as HTMLElement,
+    document.getElementById('integer') as HTMLElement,
 
 );
