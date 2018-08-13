@@ -2,23 +2,10 @@ body {
   font-family: sans-serif;
 }
 
-.counter {
-  border: solid 2px black;
-  width: 1000px;
-  height: 400px;
-  margin-top: 50px;
-  margin-left: 150px;
-}
-
-.addWinSet {
-  border: solid 2px black;
-  width: 1000px;
-  height: 400px;
-  margin-top: 50px;
-  margin-left: 150px;
-}
-
-.integer {
+.counter,
+.addWinSet,
+.integer,
+.mwRegister {
   border: solid 2px black;
   width: 1000px;
   height: 400px;
