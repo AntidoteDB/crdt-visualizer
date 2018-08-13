@@ -46,6 +46,7 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     for (let e of downstream) {
       debugger;
       if (e.element === "") {
+        /*VERSION 1*/
         /*         e.removedTokens.forEach(element => {
           let size = newState.size;
           if (size > 0) {
@@ -63,6 +64,7 @@ export class Mw_register implements CRDT_type<State, Downstream> {
           newState.delete(element);
         }); */
 
+        /*VERSION 2*/ // In case you uncomment version one, comment the next line of code:
         newState.clear();
       } else {
         let tokens = state.get(e.element);
