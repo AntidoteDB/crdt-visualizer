@@ -15,15 +15,11 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     return new Map();
   }
   downstream(operation: Operation, uid: string, state: State): Downstream {
-    let tokens = [];
-    let size = state.size;
-    if (size > 0) {
-      let iterator = state.values();
+    let tokens: string[] = [];
 
-      while (size--) {
-        tokens.push(iterator.next().value[0]);
-      }
-    }
+    state.forEach(elements => {
+      tokens = tokens.concat(elements);
+    });
 
     if (operation.name === "assign") {
       let elem = operation.args[0];
@@ -71,15 +67,11 @@ export class Mw_register implements CRDT_type<State, Downstream> {
   }
 
   value(state: State): string {
-    let keys = [];
-    let size = state.size;
-    if (size > 0) {
-      let iterator = state.keys();
+    let keys: string[] = [];
 
-      while (size--) {
-        keys.push(iterator.next().value);
-      }
-    }
+    state.forEach(function(elements, key) {
+      keys.push(key);
+    });
 
     keys = keys.sort();
 
