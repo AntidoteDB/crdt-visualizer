@@ -25,6 +25,7 @@ export class Set_aw implements CRDT_type<State, Downstream> {
 			}
 			return [{element: elem, addedTokens: [uid], removedTokens: tokens}];
 		} else if (operation.name === "remove") {
+			
 			let elem = operation.args[0];
 			let tokens = state.get(elem);
 			if (!tokens) {

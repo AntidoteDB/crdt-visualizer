@@ -4,7 +4,6 @@ body {
 
 .counter,
 .addWinSet,
-.integer,
 .mwRegister {
   border: solid 2px black;
   width: 1000px;

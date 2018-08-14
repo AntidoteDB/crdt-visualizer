@@ -15,68 +15,45 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     return new Map();
   }
   downstream(operation: Operation, uid: string, state: State): Downstream {
-    debugger;
+    let tokens = [];
+    let size = state.size;
+    if (size > 0) {
+      let iterator = state.values();
+
+      while (size--) {
+        tokens.push(iterator.next().value[0]);
+      }
+    }
+
     if (operation.name === "assign") {
       let elem = operation.args[0];
-      let tokens = [state.keys().next().value];
-      if (!tokens) {
-        tokens = [];
-      }
       return [{ element: elem, addedTokens: [uid], removedTokens: tokens }];
     } else if (operation.name === "reset") {
-      debugger;
-      let tokens = [];
-      let size = state.size;
-      if (size > 0) {
-        let iterator = state.values();
-
-        while (size--) {
-          tokens.push(iterator.next().value[0]);
-        }
-      }
-
       return [{ element: "", addedTokens: [], removedTokens: tokens }];
     }
+
     throw new Error();
   }
+
   update(downstream: Downstream, state: State): State {
-    debugger;
-    let newState = new Map(state);
-
+    let newState = new Map(state); // x, y
     for (let e of downstream) {
-      debugger;
-      if (e.element === "") {
-        /*VERSION 1*/
-        /*         e.removedTokens.forEach(element => {
-          let size = newState.size;
-          if (size > 0) {
-            let iterator = state.keys();
-
-            while (size--) {
-              let key = iterator.next().value[0];
-              let keyValue = newState.get(key);
-              if (keyValue && element === keyValue[0]) {
-                newState.delete(key);
-              }
-            }
+      newState.forEach(function(value, key) {
+        e.removedTokens.forEach(element => {
+          if (value && value[0] === element) {
+            newState.delete(key);
           }
+        });
+      });
 
-          newState.delete(element);
-        }); */
-
-        /*VERSION 2*/ // In case you uncomment version one, comment the next line of code:
-        newState.clear();
-      } else {
-        let tokens = state.get(e.element);
-
-        if (!tokens) {
-          newState.delete(e.removedTokens[0]);
-          newState.set(e.element, e.addedTokens);
-        }
+      if (e.element !== "") {
+        newState.set(e.element, e.addedTokens);
       }
     }
+
     return newState;
   }
+
   value(state: State): string {
     let res = "{";
     state.forEach((val, key) => {
