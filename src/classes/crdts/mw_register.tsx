@@ -39,14 +39,12 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     for (let e of downstream) {
       newState.forEach(function(tokens, key) {
         e.removedTokens.forEach(removedToken => {
-          if (tokens && tokens.length !== 0) {
-            tokens.forEach(element => {
-              if (element === removedToken) {
-                tokens = tokens.filter(item => item !== removedToken);
-                newState.set(key, tokens);
-              }
-            });
-          }
+          tokens.forEach(element => {
+            if (element === removedToken) {
+              tokens = tokens.filter(item => item !== removedToken);
+              newState.set(key, tokens);
+            }
+          });
         });
 
         if (tokens.length === 0) {
@@ -56,7 +54,7 @@ export class Mw_register implements CRDT_type<State, Downstream> {
 
       if (e.element !== "") {
         let tokens = newState.get(e.element);
-        if (tokens && tokens.length !== 0) {
+        if (tokens) {
           newState.set(e.element, e.addedTokens.concat(tokens));
         } else {
           newState.set(e.element, e.addedTokens);
