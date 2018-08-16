@@ -15,34 +15,35 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     return new Map();
   }
   downstream(operation: Operation, uid: string, state: State): Downstream {
-    let tokens: string[] = [];
+    let tokensArray: string[] = [];
 
-    state.forEach(elements => {
-      tokens = tokens.concat(elements);
+    state.forEach(tokens => {
+      tokensArray = tokensArray.concat(tokens);
     });
 
     if (operation.name === "assign") {
       let elem = operation.args[0];
-      return [{ element: elem, addedTokens: [uid], removedTokens: tokens }];
+      return [
+        { element: elem, addedTokens: [uid], removedTokens: tokensArray }
+      ];
     } else if (operation.name === "reset") {
-      return [{ element: "", addedTokens: [], removedTokens: tokens }];
+      return [{ element: "", addedTokens: [], removedTokens: tokensArray }];
     }
 
     throw new Error();
   }
 
   update(downstream: Downstream, state: State): State {
-    let newState = new Map(state); // x, y
+    let newState = new Map(state);
+
     for (let e of downstream) {
       newState.forEach(function(tokens, key) {
         e.removedTokens.forEach(removedToken => {
           if (tokens && tokens.length !== 0) {
             tokens.forEach(element => {
               if (element === removedToken) {
-                var index = tokens.indexOf(removedToken);
-                if (index > -1) {
-                  tokens.splice(index, 1);
-                }
+                tokens = tokens.filter(item => item !== removedToken);
+                newState.set(key, tokens);
               }
             });
           }
@@ -86,6 +87,7 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     res += "}";
     return res;
   }
+
   defaultOperation(): string {
     return "assign(x)";
   }
