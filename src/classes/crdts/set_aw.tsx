@@ -52,15 +52,32 @@ export class Set_aw implements CRDT_type<State, Downstream> {
 		}
 		return newState;
 	}
-	value(state: State): string {
-		let res = "{";
-		state.forEach((val, key) => {
-			if (res.length > 1) {
-				res += ", ";
-			}
-			res += key;
+	value(state: State, showMetadata: boolean): string {
+		let keys: string[] = [];
+		let sortedMap = new Map();
+	
+		state.forEach(function(elements, key) {
+		  keys.push(key);
 		});
+	
+		// Sort keys array and go through them to put in and put them in sorted map
+		keys.sort().forEach(function(key) {
+		  if (key) {
+			sortedMap.set(key, state.get(key));
+		  }
+		});
+	
+		let res = "{";
+	
+		sortedMap.forEach((val, key) => {
+		  if (res.length > 1) {
+			res += ", ";
+		  }
+		  res += key + (showMetadata ? " [" + val.join(", ") + "]" : "");
+		});
+	
 		res += "}";
+	
 		return res;
 	}
 	defaultOperation(): string {

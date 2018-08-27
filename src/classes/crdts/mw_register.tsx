@@ -65,24 +65,32 @@ export class Mw_register implements CRDT_type<State, Downstream> {
     return newState;
   }
 
-  value(state: State): string {
+  value(state: State, showMetadata: boolean): string {
     let keys: string[] = [];
+    let sortedMap = new Map();
 
     state.forEach(function(elements, key) {
       keys.push(key);
     });
 
-    keys = keys.sort();
+    // Sort keys array and go through them to put in and put them in sorted map
+    keys.sort().forEach(function(key) {
+      if (key) {
+        sortedMap.set(key, state.get(key));
+      }
+    });
 
     let res = "{";
 
-    keys.forEach(key => {
+    sortedMap.forEach((val, key) => {
       if (res.length > 1) {
         res += ", ";
       }
-      res += key;
+      res += key + (showMetadata ? " [" + val.join(", ") + "]" : "");
     });
+
     res += "}";
+
     return res;
   }
 

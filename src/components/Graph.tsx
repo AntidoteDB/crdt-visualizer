@@ -96,7 +96,7 @@ class Graph extends React.Component <Props, States> {
             x={this.state.MouseX}
             y={this.state.MouseY}
             text={'Timestamp:' + (this.state.MouseX-100)}
-            state={'State:' + this.props.visualizer!.new_value(this.state.Actual_Replica_ID, this.state.MouseX)}
+            state={'State:' + this.props.visualizer!.new_value(this.state.Actual_Replica_ID, this.state.MouseX, true)}
             visible={this.state.Is_Tool_Visible ? true : false}
             /> 
 
@@ -136,15 +136,15 @@ class Graph extends React.Component <Props, States> {
             </Group>
 
             <TooltipForState x={800} y={50}
-            state={this.props.visualizer.new_value(0, 700)}
+            state={this.props.visualizer.new_value(0, 700, false)}
             text={'State:'}
             visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
             <TooltipForState x={800} y={150}
-            state={this.props.visualizer.new_value(1, 700)}
+            state={this.props.visualizer.new_value(1, 700, false)}
             text={'State:'}
             visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
             <TooltipForState x={800} y={250}
-            state={this.props.visualizer.new_value(2, 700)}
+            state={this.props.visualizer.new_value(2, 700, false)}
             text={'State:'}
             visible={(this.state.isDragging || this.state.Operation_dragging) ? false : true}/>
             </Layer>
