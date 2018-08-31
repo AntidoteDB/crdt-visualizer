@@ -2,8 +2,8 @@ import * as React from 'react';
 import {Arrow, Group, Rect, Text} from 'react-konva';
 import Operation from './Operation';
 import visualizer from '../classes/visualizer';
-import Remove from './Remove';
 import Graph from './Graph';
+import RemoveUpdate from './RemoveUpdate';
 
 
 
@@ -63,7 +63,7 @@ class Replica extends React.Component<Props, States> {
                   fontSize={15} fontFamily={'Calibri'}
                   padding={5} align={'center'} height={30} width={30}
             />
-            <Remove x={this.props.points[2]} y={this.props.points[3] - 25} visible={this.state.RemVisible}/>
+            <RemoveUpdate x={this.props.points[2]} y={this.props.points[3] - 25} visible={this.state.RemVisible}/>
 
 
             {this.state.operations.length > 0 ?
