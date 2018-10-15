@@ -33,7 +33,7 @@ class RemoveUpdate extends React.Component<Props, States> {
                     cornerRadius={10}
 
                 />
-                <Text text={'Move hier to trash the update'} fill={'#555'}
+                <Text text={'Move here to remove the object'} fill={'#555'}
                       x={this.props.x} y={this.props.y} fontSize={13} width={150} padding={20} align={'center'}
                       fontFamily={'Calibri'}/>
             </Group>);

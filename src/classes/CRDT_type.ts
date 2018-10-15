@@ -28,7 +28,7 @@ export interface CRDT_type<State=any,Downstream=any> {
      * Displays the value of a given state as string.
      * Does not include meta data.
      */
-    value(state: State): string;
+    value(state: State, showMetadata: boolean): string;
 
     /**
      * The default operation, when adding a new operation to the interface.

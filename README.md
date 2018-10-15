@@ -15,8 +15,8 @@ The project is developed in TypeScript and requires npm to be installed.
 
 To install the dependencies first run:
 
-  npm install
+  `npm install`
 
 Then run the following command to compile and start the application:
 
-  npm run start
+  `npm run start`
