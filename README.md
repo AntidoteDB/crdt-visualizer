@@ -44,9 +44,9 @@ To run this project, you will need to install `npm`. It goes together with `Node
 
 After you did install node, to check whether you have it, run the following commands in the console.
 
-#####To check if you have `Node.js` installed, run this command in your terminal:
+##### To check if you have `Node.js` installed, run this command in your terminal:
 `node -v`
-#####To confirm that you have `npm` installed you can run this command in your terminal:
+##### To confirm that you have `npm` installed you can run this command in your terminal:
 `npm -v`
 
 #### Install packages
