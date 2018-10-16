@@ -38,7 +38,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 Before you can run the application, you have to go through the following steps of installing the pre-requisites.
 
-#### Install npm
+### Install npm
 
 To run this project, you will need to install `npm`. It goes together with `Nodejs`. Therefore, download and install `node` from [here](https://nodejs.org/en/).
 
@@ -49,7 +49,7 @@ After you did install node, to check whether you have it, run the following comm
 ##### To confirm that you have `npm` installed you can run this command in your terminal:
 `npm -v`
 
-#### Install packages
+## Install packages
 
 Now, once you installed `npm`, under the root directory, run the following command to install all required packages to run the application.
 
@@ -57,7 +57,7 @@ Now, once you installed `npm`, under the root directory, run the following comma
 npm i
 ```
 
-### Running
+## Running
 
 After you have installed all the packages, you can run the application.
 To do that, use the following command:
