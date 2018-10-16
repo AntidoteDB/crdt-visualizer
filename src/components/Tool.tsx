@@ -91,8 +91,8 @@ class Tool extends React.Component <Props, States> {
         const absPos = e.evt;
         this.setState({
             textEditVisible: true,
-            textX: absPos.clientX - document.documentElement.offsetLeft + document.body.scrollLeft   + document.documentElement.scrollLeft,
-            textY: absPos.clientY - document.documentElement.offsetTop+ document.body.scrollTop + document.documentElement.scrollTop,
+            textX: absPos.clientX - document!.documentElement!.offsetLeft + document.body.scrollLeft   + document!.documentElement!.scrollLeft,
+            textY: absPos.clientY - document!.documentElement!.offsetTop+ document.body.scrollTop + document!.documentElement!.scrollTop,
             textValue: operation_name,
             op: operation
         });
